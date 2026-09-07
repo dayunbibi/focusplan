@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FocusPlan
 
-## Getting Started
+시간표, 캘린더, 할 일, 과제, 시험, 공부 계획을 한곳에서 관리하는 학생용 생산성 웹앱 MVP입니다.
 
-First, run the development server:
+## 기술 스택
+
+- Next.js 16 (App Router), React 19, TypeScript
+- Tailwind CSS 4
+- PostgreSQL, Prisma 7
+- Lucide 아이콘
+
+## 시작하기
 
 ```bash
+npm install
+cp .env.example .env
+npm run db:generate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+로컬 PostgreSQL에 맞게 `.env`의 `DATABASE_URL`을 수정한 다음, 최초 마이그레이션을 생성합니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run db:migrate -- --name init
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 주요 명령어
 
-## Learn More
+```bash
+npm run typecheck
+npm run lint
+npm run build
+npm run db:studio
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 구조
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/
+├── app/
+│   ├── (app)/
+│   │   ├── _components/     # 앱 셸과 재사용 UI
+│   │   ├── _lib/            # 화면용 데이터 계층
+│   │   ├── calendar/
+│   │   ├── settings/
+│   │   ├── study-planner/
+│   │   ├── tasks/
+│   │   ├── timetable/
+│   │   └── page.tsx         # Dashboard
+│   ├── globals.css
+│   └── layout.tsx
+├── generated/prisma/        # prisma generate 결과 (git 제외)
+└── types/                   # 화면 및 도메인 타입
+prisma/
+└── schema.prisma            # PostgreSQL 데이터 모델
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+현재 Dashboard는 타입이 지정된 목업 데이터를 사용합니다. `_lib/dashboard-data.ts`의 데이터 접근부를 Prisma 쿼리로 교체할 수 있도록 UI 컴포넌트와 분리되어 있습니다. `StudySession.source`는 향후 AI 자동 계획과 수동 계획을 구분하기 위한 최소 확장 지점입니다.

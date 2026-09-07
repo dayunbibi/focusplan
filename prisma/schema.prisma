@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String           @id @default(cuid())
+  email           String           @unique
+  name            String?
+  timezone        String           @default("Asia/Seoul")
+  courses         Course[]
+  timetableEvents TimetableEvent[]
+  tasks           Task[]
+  assignments     Assignment[]
+  exams           Exam[]
+  studySessions   StudySession[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model Course {
+  id              String           @id @default(cuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  code            String?
+  color           String           @default("#187768")
+  location        String?
+  timetableEvents TimetableEvent[]
+  tasks           Task[]
+  assignments     Assignment[]
+  exams           Exam[]
+  studySessions   StudySession[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([userId])
+}
+
+model TimetableEvent {
+  id        String    @id @default(cuid())
+  userId    String
+  courseId  String?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  title     String
+  weekday   Int
+  startTime String
+  endTime   String
+  location  String?
+  startsOn  DateTime?
+  endsOn    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, weekday])
+  @@index([courseId])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  userId      String
+  courseId    String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course?   @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  title       String
+  notes       String?
+  priority    Priority  @default(MEDIUM)
+  dueAt       DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId, dueAt])
+  @@index([courseId])
+}
+
+model Assignment {
+  id          String    @id @default(cuid())
+  userId      String
+  courseId    String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course?   @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  dueAt       DateTime
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([userId, dueAt])
+  @@index([courseId])
+}
+
+model Exam {
+  id        String   @id @default(cuid())
+  userId    String
+  courseId  String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  title     String
+  examAt    DateTime
+  location  String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, examAt])
+  @@index([courseId])
+}
+
+model StudySession {
+  id          String     @id @default(cuid())
+  userId      String
+  courseId    String?
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course      Course?    @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  title       String
+  plannedAt   DateTime
+  durationMin Int
+  completedAt DateTime?
+  source      PlanSource @default(MANUAL)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([userId, plannedAt])
+  @@index([courseId])
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum PlanSource {
+  MANUAL
+  AI
+}
