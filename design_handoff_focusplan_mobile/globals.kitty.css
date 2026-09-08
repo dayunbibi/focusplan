@@ -1,0 +1,190 @@
+/* FocusPlan — "Kitty" kawaii pink 토큰
+ * src/app/globals.css 의 :root + @theme inline 블록을 이 파일 내용으로 교체하세요.
+ * 기존 토큰 이름(--background, --foreground, --surface, --primary …)을 그대로 유지해
+ * 이미 작성된 컴포넌트(bg-surface, text-muted, border-border 등)는 수정 없이 새 팔레트를 따릅니다.
+ * 추가 토큰(--now, --done, --lav, --shadow, --radius)만 새로 들어옵니다. */
+
+@import "tailwindcss";
+
+:root {
+  /* 기존 이름 → Kitty 값 매핑 */
+  --background: #fff4f8;
+  --foreground: #5c3a4b;        /* ink — 웜 모브브라운, 순검정 금지 */
+  --surface: #ffffff;
+  --surface-soft: #ffe7f1;      /* surface-2 */
+  --primary: #ff7fb2;           /* accent */
+  --primary-strong: #e0568c;    /* accent-ink — 핑크 위 텍스트/제목 */
+  --primary-soft: #ffe1ec;      /* accent-soft */
+  --muted: #b47f96;
+  --border: #ffd3e3;            /* line */
+  --danger: #e0568c;
+  --warning: #b4551a;           /* now-ink */
+  --focus: #b79bec;             /* lav */
+
+  /* Kitty 신규 토큰 */
+  --now: #ff9f6b;               /* "지금/경고" — 절대 핑크 아님 */
+  --now-soft: #ffeede;
+  --now-ink: #b4551a;
+  --done: #5fd0a8;              /* 완료/성공 */
+  --done-soft: #eafaf4;
+  --done-ink: #1d7a5f;
+  --lav: #b79bec;               /* 보조 악센트·포커스 링 */
+  --lav-soft: #f4f0ff;
+  --lav-ink: #5c4a8a;
+  --shadow: 0 2px 6px rgba(255, 127, 178, 0.14), 0 14px 34px rgba(255, 127, 178, 0.16);
+  --radius: 22px;
+  --dots: rgba(255, 127, 178, 0.14);
+  --veil: rgba(92, 58, 75, 0.28);
+}
+
+/* 수동 토글이 시스템 설정을 이깁니다: <html data-theme="dark"> */
+:root[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  /* 아래 블록은 data-theme="dark" 와 prefers-color-scheme:dark 양쪽에서 동일하게 적용 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #2a1622;
+    --foreground: #ffe3ef;
+    --surface: #361d2c;
+    --surface-soft: #45283a;
+    --primary: #ff93bf;
+    --primary-strong: #ffb6d4;
+    --primary-soft: #4a2a3c;
+    --muted: #cd9fb5;
+    --border: #4f2e41;
+    --danger: #ffb6d4;
+    --warning: #ffb884;
+    --now: #ffb884;
+    --now-soft: #3c2a24;
+    --now-ink: #ffb884;
+    --done: #6ed7b4;
+    --done-soft: #25382f;
+    --done-ink: #6ed7b4;
+    --lav: #c3acf3;
+    --lav-soft: #2f2740;
+    --lav-ink: #c3acf3;
+    --shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.4);
+    --dots: rgba(255, 147, 191, 0.12);
+    --veil: rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  --background: #2a1622;
+  --foreground: #ffe3ef;
+  --surface: #361d2c;
+  --surface-soft: #45283a;
+  --primary: #ff93bf;
+  --primary-strong: #ffb6d4;
+  --primary-soft: #4a2a3c;
+  --muted: #cd9fb5;
+  --border: #4f2e41;
+  --danger: #ffb6d4;
+  --warning: #ffb884;
+  --now: #ffb884;
+  --now-soft: #3c2a24;
+  --now-ink: #ffb884;
+  --done: #6ed7b4;
+  --done-soft: #25382f;
+  --done-ink: #6ed7b4;
+  --lav: #c3acf3;
+  --lav-soft: #2f2740;
+  --lav-ink: #c3acf3;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.4);
+  --dots: rgba(255, 147, 191, 0.12);
+  --veil: rgba(0, 0, 0, 0.5);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-soft: var(--surface-soft);
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-soft: var(--primary-soft);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-now: var(--now);
+  --color-now-soft: var(--now-soft);
+  --color-now-ink: var(--now-ink);
+  --color-done: var(--done);
+  --color-done-soft: var(--done-soft);
+  --color-done-ink: var(--done-ink);
+  --color-lav: var(--lav);
+  --color-lav-soft: var(--lav-soft);
+  --color-lav-ink: var(--lav-ink);
+  --radius-card: var(--radius);
+  --shadow-kitty: var(--shadow);
+  /* Fredoka = 제목·브랜드·버튼/탭 라벨, Nunito = 본문·숫자 */
+  --font-display: Fredoka, "Noto Sans KR", sans-serif;
+  --font-sans: Nunito, "Pretendard Variable", Pretendard, "Noto Sans KR", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--background); scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  background:
+    radial-gradient(circle at 12% -5%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 40%),
+    radial-gradient(circle at 90% 0%, color-mix(in srgb, var(--lav) 12%, transparent), transparent 38%),
+    var(--background);
+  background-attachment: fixed;
+}
+
+/* 점 그리드 종이 (기존 .planner-paper 대체) */
+.kitty-paper {
+  background-color: var(--surface);
+  background-image: radial-gradient(circle at 1px 1px, var(--dots) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* 하트 체크박스 — 디자인 시스템 시그니처 */
+input[type="checkbox"].kitty {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  border: 2.5px solid var(--primary);
+  background: var(--surface);
+  cursor: pointer;
+  flex: none;
+  transition: background 0.16s, border-color 0.16s;
+}
+input[type="checkbox"].kitty:checked {
+  border-color: var(--done);
+  background: var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 21s-8-5.4-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.6-8 11-8 11z'/%3E%3C/svg%3E") center / 12px no-repeat;
+  animation: kitty-pop 0.32s ease;
+}
+
+@keyframes kitty-pop { 0% { transform: scale(1); } 45% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes kitty-sheet { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes kitty-rise { from { transform: translateY(22px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+button, a, input { touch-action: manipulation; }
+button, a { -webkit-tap-highlight-color: transparent; }
+
+:focus-visible { outline: 3px solid var(--lav); outline-offset: 2px; }
+::selection { background: var(--primary-soft); color: var(--primary-strong); }
+
+.tabs-scroll { scrollbar-width: none; overscroll-behavior-inline: contain; }
+.tabs-scroll::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

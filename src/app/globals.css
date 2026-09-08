@@ -1,18 +1,79 @@
 @import "tailwindcss";
 
+/* FocusPlan — "Kitty" 축소 팔레트.
+ * 배경: --background --surface --surface-soft
+ * 텍스트: --foreground(본문) --muted(보조)
+ * 강조: --primary(핑크) / 상태: --now(경고·마감) --done(완료)
+ * --lav 는 포커스 링에만 사용. 그 외 색은 위 토큰으로 통일.
+ * --border/--shadow/--radius/--dots/--veil 는 구조용(색 팔레트 아님). */
 :root {
-  --background: #fff1f4;
-  --foreground: #4c3940;
-  --surface: #fffdfb;
-  --surface-soft: #fbf0f2;
-  --primary: #a94f69;
-  --primary-strong: #813d52;
-  --primary-soft: #f7dfe6;
-  --muted: #806c73;
-  --border: #efd8de;
-  --danger: #a9434d;
-  --warning: #986121;
-  --focus: #9e4963;
+  --background: #fff4f8;
+  --foreground: #5c3a4b;
+  --surface: #ffffff;
+  --surface-soft: #ffe7f1;
+  --primary: #b83f73;
+  --primary-strong: #873052;
+  --primary-soft: #ffe7f1;
+  --muted: #b47f96;
+  --border: #ffd3e3;
+  --now: #ff9f6b;
+  --done: #2f8b6c;
+  --done-soft: #e3f8f0;
+  --done-ink: #256d56;
+  --now-soft: #fff0e7;
+  --now-ink: #944917;
+  --lav: #b79bec; /* 포커스 링 전용 */
+
+  --shadow: 0 2px 6px rgba(255, 127, 178, 0.14), 0 14px 34px rgba(255, 127, 178, 0.16);
+  --radius: 22px;
+  --dots: rgba(255, 127, 178, 0.14);
+  --veil: rgba(92, 58, 75, 0.28);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #2a1622;
+    --foreground: #ffe3ef;
+    --surface: #361d2c;
+    --surface-soft: #45283a;
+    --primary: #e66d9e;
+    --primary-strong: #ffb2d0;
+    --primary-soft: #542b40;
+    --muted: #cd9fb5;
+    --border: #4f2e41;
+    --now: #ffb884;
+    --done: #6ed7b4;
+    --done-soft: #28483f;
+    --done-ink: #9ae8ce;
+    --now-soft: #513524;
+    --now-ink: #ffc49b;
+    --lav: #c3acf3;
+    --shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.4);
+    --dots: rgba(255, 147, 191, 0.12);
+    --veil: rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  --background: #2a1622;
+  --foreground: #ffe3ef;
+  --surface: #361d2c;
+  --surface-soft: #45283a;
+  --primary: #e66d9e;
+  --primary-strong: #ffb2d0;
+  --primary-soft: #542b40;
+  --muted: #cd9fb5;
+  --border: #4f2e41;
+  --now: #ffb884;
+  --done: #6ed7b4;
+  --done-soft: #28483f;
+  --done-ink: #9ae8ce;
+  --now-soft: #513524;
+  --now-ink: #ffc49b;
+  --lav: #c3acf3;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.4);
+  --dots: rgba(255, 147, 191, 0.12);
+  --veil: rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
@@ -25,10 +86,17 @@
   --color-primary-soft: var(--primary-soft);
   --color-muted: var(--muted);
   --color-border: var(--border);
-  --color-danger: var(--danger);
-  --color-warning: var(--warning);
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", "Noto Sans KR", sans-serif;
+  --color-now: var(--now);
+  --color-now-soft: var(--now-soft);
+  --color-now-ink: var(--now-ink);
+  --color-done: var(--done);
+  --color-done-soft: var(--done-soft);
+  --color-done-ink: var(--done-ink);
+  --color-lav: var(--lav);
+  --radius-card: var(--radius);
+  --shadow-kitty: var(--shadow);
+  --font-display: var(--font-fredoka), "Noto Sans KR", sans-serif;
+  --font-sans: var(--font-nunito), "Pretendard Variable", Pretendard, "Noto Sans KR", sans-serif;
 }
 
 * {
@@ -42,16 +110,63 @@ html {
 
 body {
   margin: 0;
-  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  background-image: radial-gradient(circle at 1px 1px, rgba(190, 118, 137, 0.08) 1px, transparent 0);
-  background-size: 22px 22px;
+  background:
+    radial-gradient(circle at 12% -5%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 42%),
+    radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--primary) 7%, transparent), transparent 40%),
+    var(--background);
+  background-attachment: fixed;
+}
+
+.kitty-paper {
+  background-color: var(--surface);
+  background-image: radial-gradient(circle at 1px 1px, var(--dots) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* 하트 체크박스 */
+input[type="checkbox"].kitty {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  border: 2.5px solid var(--primary);
+  background: var(--surface);
+  cursor: pointer;
+  flex: none;
+  transition: background 0.16s, border-color 0.16s;
+}
+input[type="checkbox"].kitty:checked {
+  border-color: var(--done);
+  background: var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 21s-8-5.4-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.6-8 11-8 11z'/%3E%3C/svg%3E") center / 12px no-repeat;
+  animation: kitty-pop 0.32s ease;
+}
+input[type="checkbox"].kitty:checked ~ .kitty-check-label {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+@keyframes kitty-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+@keyframes kitty-sheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes kitty-rise {
+  from { transform: translateY(22px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 button,
 a,
-input {
+input,
+select {
   touch-action: manipulation;
 }
 
@@ -61,49 +176,21 @@ a {
 }
 
 :focus-visible {
-  outline: 3px solid color-mix(in srgb, var(--focus) 65%, white);
+  outline: 3px solid var(--lav);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: var(--primary-soft);
-  color: var(--primary-strong);
+  background: var(--surface-soft);
+  color: var(--primary);
 }
 
-.planner-paper {
-  background-color: #fffdf8;
-  background-image: linear-gradient(rgba(255, 253, 248, 0.95), rgba(255, 253, 248, 0.95)),
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 31px,
-      rgba(229, 180, 193, 0.17) 31px,
-      rgba(229, 180, 193, 0.17) 32px
-    );
-}
-
-.planner-paper::after {
-  position: absolute;
-  inset: 0 auto 0 28px;
-  width: 1px;
-  background: rgba(225, 158, 176, 0.19);
-  content: "";
-  pointer-events: none;
-}
-
-.planner-tabs-scroll {
+.tabs-scroll {
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
 }
-
-.planner-tabs-scroll::-webkit-scrollbar {
+.tabs-scroll::-webkit-scrollbar {
   display: none;
-}
-
-@media (min-width: 640px) {
-  .planner-paper::after {
-    left: 42px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,500;0,600;0,700;1,600&display=swap">
+<style>
+html,body{margin:0;padding:0;height:100%;background:#fff4f8}
+body{font-family:Nunito,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#e0568c}a:hover{color:#c2447a}
+.fp{--bg:#fff4f8;--surface:#ffffff;--surface-2:#ffe7f1;--ink:#5c3a4b;--muted:#b47f96;--line:#ffd3e3;--accent:#ff7fb2;--accent-soft:#ffe1ec;--accent-ink:#e0568c;--now:#ff9f6b;--now-ink:#b4551a;--now-soft:#ffeede;--done:#5fd0a8;--done-soft:#eafaf4;--done-ink:#1d7a5f;--lav:#b79bec;--lav-soft:#f4f0ff;--lav-ink:#5c4a8a;--shadow:0 2px 6px rgba(255,127,178,.14),0 14px 34px rgba(255,127,178,.16);--radius:22px;--dots:rgba(255,127,178,.14);--veil:rgba(92,58,75,.28)}
+.fp[data-theme="dark"]{--bg:#2a1622;--surface:#361d2c;--surface-2:#45283a;--ink:#ffe3ef;--muted:#cd9fb5;--line:#4f2e41;--accent:#ff93bf;--accent-soft:#4a2a3c;--accent-ink:#ffb6d4;--now:#ffb884;--now-ink:#ffb884;--now-soft:#3c2a24;--done:#6ed7b4;--done-soft:#25382f;--done-ink:#6ed7b4;--lav:#c3acf3;--lav-soft:#2f2740;--lav-ink:#c3acf3;--shadow:0 2px 6px rgba(0,0,0,.3),0 16px 40px rgba(0,0,0,.4);--dots:rgba(255,147,191,.12);--veil:rgba(0,0,0,.5)}
+@media (prefers-color-scheme:dark){.fp[data-theme="system"]{--bg:#2a1622;--surface:#361d2c;--surface-2:#45283a;--ink:#ffe3ef;--muted:#cd9fb5;--line:#4f2e41;--accent:#ff93bf;--accent-soft:#4a2a3c;--accent-ink:#ffb6d4;--now:#ffb884;--now-ink:#ffb884;--now-soft:#3c2a24;--done:#6ed7b4;--done-soft:#25382f;--done-ink:#6ed7b4;--lav:#c3acf3;--lav-soft:#2f2740;--lav-ink:#c3acf3;--shadow:0 2px 6px rgba(0,0,0,.3),0 16px 40px rgba(0,0,0,.4);--dots:rgba(255,147,191,.12);--veil:rgba(0,0,0,.5)}}
+.scr{scrollbar-width:none}.scr::-webkit-scrollbar{display:none}
+input.fpc[type=checkbox]{appearance:none;-webkit-appearance:none;margin:0;width:21px;height:21px;border-radius:50%;border:2.5px solid var(--accent);background:var(--surface);cursor:pointer;flex:none;transition:background .16s,border-color .16s}
+input.fpc[type=checkbox]:checked{border-color:var(--done);background:var(--done) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 21s-8-5.4-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.6-8 11-8 11z'/%3E%3C/svg%3E") center/12px no-repeat;animation:fp-pop .32s ease}
+.fp button,.fp input,.fp label{font-family:inherit}
+.fp :focus-visible{outline:3px solid var(--lav);outline-offset:2px}
+.fpt{font-family:Fredoka,Nunito,sans-serif}
+@keyframes fp-pop{0%{transform:scale(1)}45%{transform:scale(1.35)}100%{transform:scale(1)}}
+@keyframes fp-rise{from{transform:translateY(22px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fp-sheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fp-fade{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></helmet>
+
+<div class="fp" data-theme="{{ theme }}" style="position:relative;width:100%;max-width:440px;height:100dvh;margin:0 auto;display:flex;flex-direction:column;overflow:hidden;background:radial-gradient(circle at 12% -5%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 42%),radial-gradient(circle at 90% 0%, color-mix(in srgb, var(--lav) 14%, transparent), transparent 38%),var(--bg);color:var(--ink)">
+
+<sc-if value="{{ onboarding }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:34px 26px 30px;animation:fp-fade .4s ease">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<span class="fpt" style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px;color:var(--accent-ink)"><svg width="28" height="24" viewBox="0 0 52 44" aria-hidden="true"><path d="M10 20 L7 4 L23 13 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M42 20 L45 4 L29 13 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M12.5 18 L11 9 L19.5 14 Z" fill="var(--accent)"></path><path d="M39.5 18 L41 9 L32.5 14 Z" fill="var(--accent)"></path><ellipse cx="26" cy="25.5" rx="18" ry="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4"></ellipse><circle cx="19.5" cy="25" r="1.9" fill="var(--ink)"></circle><circle cx="32.5" cy="25" r="1.9" fill="var(--ink)"></circle><path d="M25 29 q1 1.6 2 0" fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-linecap="round"></path></svg>FocusPlan</span>
+<button type="button" onClick="{{ finishOnboarding }}" style="border:0;background:none;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer">건너뛰기</button>
+</div>
+<div style="text-align:center">
+<div style="position:relative;display:inline-block;padding:32px 28px;border:2px solid var(--line);border-radius:26px;background:var(--surface);box-shadow:var(--shadow);transform:rotate(-1.6deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-3deg);padding:0 12px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em;white-space:nowrap">{{ obTape }}</span>
+<svg width="104" height="88" viewBox="0 0 52 44" aria-hidden="true"><path d="M10 20 L7 4 L23 13 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M42 20 L45 4 L29 13 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M12.5 18 L11 9 L19.5 14 Z" fill="var(--accent)"></path><path d="M39.5 18 L41 9 L32.5 14 Z" fill="var(--accent)"></path><g stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round"><path d="M5 23 h11"></path><path d="M5 28 h11"></path><path d="M47 23 h-11"></path><path d="M47 28 h-11"></path></g><ellipse cx="26" cy="25.5" rx="18" ry="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4"></ellipse><circle cx="19.5" cy="25" r="1.9" fill="var(--ink)"></circle><circle cx="32.5" cy="25" r="1.9" fill="var(--ink)"></circle><path d="M25 29 q1 1.6 2 0" fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-linecap="round"></path><path d="M25.2 27.6 h1.6 l-.8 1.1 Z" fill="var(--accent)"></path><g transform="translate(40,10)"><path d="M0 0 L-6.5 -4.5 L-6.5 4.5 Z" fill="var(--accent)"></path><path d="M0 0 L6.5 -4.5 L6.5 4.5 Z" fill="var(--accent)"></path><circle r="2.1" fill="var(--accent-ink)"></circle></g></svg>
+<div style="position:absolute;right:-14px;top:24px;border:2px solid var(--now);border-radius:14px;background:var(--now-soft);padding:6px 10px;font-size:11px;font-weight:800;color:var(--now-ink);transform:rotate(6deg)">D-3</div>
+<div style="position:absolute;left:-18px;bottom:30px;border:2px solid var(--done);border-radius:14px;background:var(--done-soft);padding:6px 10px;font-size:11px;font-weight:800;color:var(--done-ink);transform:rotate(-7deg)">완료!</div>
+</div>
+<h1 class="fpt" style="margin:28px 0 0;font-weight:600;font-size:28px;line-height:1.28;color:var(--accent-ink);text-wrap:pretty">{{ obTitle }}</h1>
+<p style="margin:12px 0 0;font-size:14px;line-height:1.6;color:var(--muted);text-wrap:pretty">{{ obBody }}</p>
+<div style="display:flex;justify-content:center;gap:7px;margin-top:22px">
+<span style="width:{{ obDot0w }};height:8px;border-radius:999px;background:{{ obDot0 }}"></span>
+<span style="width:{{ obDot1w }};height:8px;border-radius:999px;background:{{ obDot1 }}"></span>
+<span style="width:{{ obDot2w }};height:8px;border-radius:999px;background:{{ obDot2 }}"></span>
+</div></div>
+<div>
+<button type="button" onClick="{{ obNext }}" style="width:100%;min-height:56px;border:2px solid var(--accent-ink);border-radius:999px;background:var(--accent);color:#fff;font-family:Fredoka,sans-serif;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(255,127,178,.35)">{{ obCta }}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+<button type="button" onClick="{{ finishOnboarding }}" style="width:100%;min-height:48px;margin-top:10px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-family:Fredoka,sans-serif;font-weight:600;font-size:14px;cursor:pointer">이미 계정이 있어요</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{ inApp }}" hint-placeholder-val="{{ true }}">
+<div style="flex:none;background:color-mix(in srgb, var(--bg) 86%, transparent);backdrop-filter:blur(8px);border-bottom:2px dashed var(--line)">
+<div style="height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 16px">
+<div style="display:flex;align-items:center;gap:9px"><svg width="30" height="26" viewBox="0 0 52 44" aria-hidden="true"><path d="M10 20 L7 4 L23 13 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M42 20 L45 4 L29 13 Z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M12.5 18 L11 9 L19.5 14 Z" fill="var(--accent)"></path><path d="M39.5 18 L41 9 L32.5 14 Z" fill="var(--accent)"></path><ellipse cx="26" cy="25.5" rx="18" ry="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.4"></ellipse><circle cx="19.5" cy="25" r="1.9" fill="var(--ink)"></circle><circle cx="32.5" cy="25" r="1.9" fill="var(--ink)"></circle><path d="M25 29 q1 1.6 2 0" fill="none" stroke="var(--ink)" stroke-width="1.7" stroke-linecap="round"></path><path d="M25.2 27.6 h1.6 l-.8 1.1 Z" fill="var(--accent)"></path><g transform="translate(40,10)"><path d="M0 0 L-6.5 -4.5 L-6.5 4.5 Z" fill="var(--accent)"></path><path d="M0 0 L6.5 -4.5 L6.5 4.5 Z" fill="var(--accent)"></path><circle r="2.1" fill="var(--accent-ink)"></circle></g></svg><span class="fpt" style="font-weight:600;font-size:17px;color:var(--accent-ink)">FocusPlan</span></div>
+<div style="display:flex;align-items:center;gap:6px">
+<button type="button" aria-label="알림" style="width:40px;height:40px;display:grid;place-items:center;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg></button>
+<button type="button" onClick="{{ goSettings }}" aria-label="설정" class="fpt" style="width:40px;height:40px;display:grid;place-items:center;border-radius:999px;border:2px solid var(--line);background:var(--surface-2);color:var(--accent-ink);font-weight:600;font-size:14px;cursor:pointer">민</button>
+</div>
+</div>
+<div class="scr" style="display:flex;gap:7px;padding:10px 10px 0;overflow-x:auto">
+<button type="button" onClick="{{ goToday }}" style="{{ tab0 }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg><span>투데이</span></button>
+<button type="button" onClick="{{ goTasks }}" style="{{ tab1 }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 5h8"></path><path d="M13 12h8"></path><path d="M13 19h8"></path><path d="m3 17 2 2 4-4"></path><rect x="3" y="4" width="6" height="6" rx="1"></rect></svg><span>할 일</span></button>
+<button type="button" onClick="{{ goTimetable }}" style="{{ tab2 }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h18"></path><path d="M9 3v18"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg><span>시간표</span></button>
+<button type="button" onClick="{{ goStudy }}" style="{{ tab3 }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16"></path><path d="m16 12 2 2 4-4"></path><path d="M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"></path></svg><span>공부</span></button>
+<button type="button" onClick="{{ goCalendar }}" style="{{ tab4 }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M8 13h.01"></path><path d="M12 13h.01"></path><path d="M16 13h.01"></path><path d="M8 17h.01"></path><path d="M12 17h.01"></path><path d="M16 17h.01"></path></svg><span>캘린더</span></button>
+</div></div>
+
+<div class="scr" style="position:relative;flex:1;overflow-y:auto;padding:20px 16px 96px;background:var(--surface);border-radius:22px 22px 0 0;border-top:2px solid var(--line);background-image:radial-gradient(circle at 1px 1px, var(--dots) 1px, transparent 0);background-size:20px 20px">
+
+<sc-if value="{{ isToday }}" hint-placeholder-val="{{ true }}">
+<div style="position:relative;border:2px solid var(--line);border-radius:22px;background:var(--surface);padding:20px 18px 18px;box-shadow:var(--shadow);transform:rotate(-1.2deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-2deg);width:96px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em">9 · 7 · MON</span>
+<h1 class="fpt" style="margin:0;font-weight:600;font-size:23px;line-height:1.2;color:var(--accent-ink)">좋은 아침이에요, 민준님</h1>
+<p style="margin:6px 0 14px;font-size:13px;color:var(--muted)">오늘도 부담 없이, 계획한 만큼만 해봐요.</p>
+<div style="display:flex;align-items:center;gap:12px">
+<span class="fpt" style="font-weight:600;font-size:34px;line-height:1;color:var(--accent-ink);font-variant-numeric:tabular-nums">{{ pct }}%</span>
+<div style="min-width:0">
+<div style="display:flex;gap:3px">{{ hearts }}</div>
+<p style="margin:4px 0 0;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums">{{ totalCount }}개 중 {{ doneCount }}개 완료 · {{ cheer }}</p>
+</div></div>
+</div>
+
+<div style="margin-top:18px;position:relative;border:2px solid var(--now);border-radius:22px;background:var(--now-soft);padding:16px;transform:rotate(.9deg)">
+<p style="margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--now-ink)">지금 가장 중요한 것</p>
+<p class="fpt" style="margin:6px 0 0;font-weight:600;font-size:17px;line-height:1.25">통계 중간고사 준비를 시작해요</p>
+<p style="margin:6px 0 12px;font-size:12.5px;color:var(--now-ink)">16:00 · 50분 집중 세션</p>
+<button type="button" onClick="{{ startFocus }}" style="min-height:40px;padding:0 16px;border:2px solid var(--now);border-radius:999px;background:var(--surface);color:var(--now-ink);font-family:Fredoka,sans-serif;font-weight:600;font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>타이머 시작</button>
+</div>
+
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">오늘 수업 <span style="font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">3개</span></p>
+<div class="scr" style="display:flex;gap:10px;overflow-x:auto;margin:0 -16px;padding:0 16px 6px">
+<div style="flex:none;width:152px;border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:14px;transform:rotate(-1deg);box-shadow:0 2px 6px rgba(255,127,178,.14)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--done)"></span><p style="margin:8px 0 0;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums">09:00</p><p style="margin:2px 0 0;font-size:13px;font-weight:700">데이터 구조</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">공학관 301</p></div>
+<div style="flex:none;width:152px;border:2px solid var(--now);border-radius:18px;background:var(--now-soft);padding:14px;transform:rotate(1.2deg);box-shadow:0 2px 6px rgba(255,159,107,.2)"><span style="border-radius:999px;background:var(--now);color:#4a2a12;font-size:10px;font-weight:800;padding:2px 8px">지금</span><p style="margin:8px 0 0;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums">11:00</p><p style="margin:2px 0 0;font-size:13px;font-weight:700">현대 사회와 윤리</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--now-ink)">인문관 204</p></div>
+<div style="flex:none;width:152px;border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:14px;transform:rotate(-.8deg);box-shadow:0 2px 6px rgba(255,127,178,.14)"><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--lav)"></span><p style="margin:8px 0 0;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums">14:00</p><p style="margin:2px 0 0;font-size:13px;font-weight:700">확률과 통계</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">자연관 112</p></div>
+</div>
+
+<div style="display:flex;align-items:baseline;justify-content:space-between;margin:22px 0 10px"><p class="fpt" style="margin:0;font-weight:600;font-size:15px;color:var(--accent-ink)">오늘 할 일 <span style="font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">{{ taskRatio }}</span></p><button type="button" onClick="{{ openSheet }}" style="display:flex;align-items:center;gap:3px;border:0;background:none;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>추가</button></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ tasks }}" as="task" hint-placeholder-count="3">
+<label style="{{ task.cardStyle }}"><input class="fpc" type="checkbox" checked="{{ task.done }}" onChange="{{ task.toggle }}"><span style="flex:1;min-width:0"><span style="{{ task.titleStyle }}">{{ task.title }}</span><span style="display:flex;align-items:center;gap:6px;margin-top:3px;font-size:11.5px;color:var(--muted)"><span>{{ task.meta }}</span><span style="{{ task.badgeStyle }}">{{ task.badge }}</span></span></span></label>
+</sc-for>
+</div>
+
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">오늘 공부 계획 <span style="font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">1시간 30분</span></p>
+<div style="display:flex;gap:10px">
+<button type="button" onClick="{{ startFocus }}" style="flex:1;min-width:0;text-align:left;border:2px solid var(--line);border-radius:18px;background:var(--surface-2);padding:14px;transform:rotate(-.9deg);cursor:pointer"><p style="margin:0;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums">16:00</p><p style="margin:2px 0 0;font-size:12.5px;font-weight:700">중간고사 핵심 공식</p><p style="margin:2px 0 0;font-size:11px;color:var(--muted)">확률과 통계 · 50분</p></button>
+<button type="button" onClick="{{ startSecond }}" style="flex:1;min-width:0;text-align:left;border:2px solid var(--line);border-radius:18px;background:var(--surface-2);padding:14px;transform:rotate(.8deg);cursor:pointer"><p style="margin:0;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums">20:00</p><p style="margin:2px 0 0;font-size:12.5px;font-weight:700">그래프 탐색 풀이</p><p style="margin:2px 0 0;font-size:11px;color:var(--muted)">데이터 구조 · 40분</p></button>
+</div>
+
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">다가오는 일정</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span style="display:flex;align-items:center;gap:8px;border:2px solid var(--now);border-radius:999px;background:var(--now-soft);padding:8px 14px;font-size:12.5px;font-weight:700"><strong style="color:var(--now-ink);font-variant-numeric:tabular-nums">D-3</strong> AVL 트리 구현</span>
+<span style="display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:999px;background:var(--surface);padding:8px 14px;font-size:12.5px;font-weight:700"><strong style="color:var(--accent-ink);font-variant-numeric:tabular-nums">D-7</strong> 통계 중간고사</span>
+<span style="display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:999px;background:var(--surface);padding:8px 14px;font-size:12.5px;font-weight:700"><strong style="color:var(--accent-ink);font-variant-numeric:tabular-nums">D-10</strong> 에세이 초안</span>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTasks }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;border:2px solid var(--line);border-radius:22px;background:var(--surface);padding:20px 18px 18px;box-shadow:var(--shadow);transform:rotate(-1deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-2deg);padding:0 12px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em;white-space:nowrap">TO · DO</span>
+<h1 class="fpt" style="margin:0;font-weight:600;font-size:22px;color:var(--accent-ink)">할 일 {{ taskRatio }}</h1>
+<p style="margin:6px 0 0;font-size:12.5px;color:var(--muted)">남은 건 {{ taskLeft }}개예요. 과목별로 걸러볼 수 있어요.</p>
+</div>
+<div class="scr" style="display:flex;gap:7px;overflow-x:auto;margin:16px -16px 0;padding:0 16px 4px">
+<sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+<button type="button" onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</button>
+</sc-for>
+</div>
+<p class="fpt" style="margin:20px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">{{ filterTitle }}</p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ filteredTasks }}" as="task" hint-placeholder-count="3">
+<label style="{{ task.cardStyle }}"><input class="fpc" type="checkbox" checked="{{ task.done }}" onChange="{{ task.toggle }}"><span style="flex:1;min-width:0"><span style="{{ task.titleStyle }}">{{ task.title }}</span><span style="display:flex;align-items:center;gap:6px;margin-top:3px;font-size:11.5px;color:var(--muted)"><span>{{ task.meta }}</span><span style="{{ task.badgeStyle }}">{{ task.badge }}</span></span></span></label>
+</sc-for>
+</div>
+<sc-if value="{{ noTasks }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:10px;border:2px dashed var(--line);border-radius:22px;padding:34px 20px;text-align:center">
+<svg width="70" height="59" viewBox="0 0 52 44" aria-hidden="true" style="opacity:.5"><path d="M10 20 L7 4 L23 13 Z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.4" stroke-linejoin="round"></path><path d="M42 20 L45 4 L29 13 Z" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.4" stroke-linejoin="round"></path><ellipse cx="26" cy="25.5" rx="18" ry="15" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="2.4"></ellipse><circle cx="19.5" cy="25" r="1.9" fill="var(--muted)"></circle><circle cx="32.5" cy="25" r="1.9" fill="var(--muted)"></circle><path d="M25 30 q1 -1.6 2 0" fill="none" stroke="var(--muted)" stroke-width="1.7" stroke-linecap="round"></path></svg>
+<p class="fpt" style="margin:12px 0 0;font-weight:600;font-size:16px;color:var(--muted)">여긴 아직 비어 있어요</p>
+<p style="margin:6px 0 0;font-size:12.5px;color:var(--muted)">＋ 버튼으로 첫 할 일을 추가해봐요.</p>
+</div>
+</sc-if>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">과제 마감 <span style="font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">2</span></p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="border:2px solid var(--now);border-radius:18px;background:var(--surface);padding:14px;transform:rotate(-.8deg);box-shadow:0 2px 6px rgba(255,127,178,.14)"><div style="display:flex;align-items:center;gap:12px"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--now-soft);color:var(--now-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 14v2.2l1.6 1"></path><path d="M16 2v3"></path><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338"></path><path d="M3 9h5.859"></path><path d="M8 2v3"></path><circle cx="16" cy="16" r="6"></circle></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">AVL 트리 구현</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">데이터 구조 · 9월 10일</p></div><span style="flex:none;border-radius:999px;background:var(--now);color:#4a2a12;font-size:11.5px;font-weight:800;padding:4px 10px;font-variant-numeric:tabular-nums">D-3</span></div></div>
+<div style="border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:14px;transform:rotate(.7deg);box-shadow:0 2px 6px rgba(255,127,178,.14)"><div style="display:flex;align-items:center;gap:12px"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--accent-soft);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 14v2.2l1.6 1"></path><path d="M16 2v3"></path><path d="M21 7.338V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h2.338"></path><path d="M3 9h5.859"></path><path d="M8 2v3"></path><circle cx="16" cy="16" r="6"></circle></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">에세이 초안</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">현대 사회와 윤리 · 9월 17일</p></div><span style="flex:none;border-radius:999px;background:var(--surface-2);color:var(--accent-ink);font-size:11.5px;font-weight:800;padding:4px 10px;font-variant-numeric:tabular-nums">D-10</span></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isTimetable }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;border:2px solid var(--line);border-radius:22px;background:var(--surface);padding:20px 18px 16px;box-shadow:var(--shadow);transform:rotate(-1deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-2deg);padding:0 12px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em;white-space:nowrap">MY TIMETABLE</span>
+<h1 class="fpt" style="margin:0;font-weight:600;font-size:22px;color:var(--accent-ink)">내 시간표</h1>
+<p style="margin:6px 0 0;font-size:12.5px;color:var(--muted)">과목 3개 · 월요일 수업 3개 · 나머지 요일은 아직 비어 있어요</p>
+</div>
+<div style="margin-top:18px;border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:10px 8px 12px;box-shadow:0 2px 6px rgba(255,127,178,.14)">
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;margin-bottom:4px"><span></span><span class="fpt" style="text-align:center;font-weight:600;font-size:12px;color:#fff;background:var(--accent);border-radius:999px;padding:3px 0">월</span><span class="fpt" style="text-align:center;font-weight:600;font-size:12px;color:var(--muted);padding:3px 0">화</span><span class="fpt" style="text-align:center;font-weight:600;font-size:12px;color:var(--muted);padding:3px 0">수</span><span class="fpt" style="text-align:center;font-weight:600;font-size:12px;color:var(--muted);padding:3px 0">목</span><span class="fpt" style="text-align:center;font-weight:600;font-size:12px;color:var(--muted);padding:3px 0">금</span></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:58px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">09</span><div style="position:relative;border-top:2px dashed var(--accent-soft)"><div style="position:absolute;inset:2px;border:2px solid var(--done);border-radius:12px;background:var(--done-soft);padding:6px;display:flex;align-items:center;transform:rotate(-1deg)"><span style="font-size:10.5px;font-weight:800;color:var(--done-ink);line-height:1.15">데이터 구조</span></div></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:58px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">10</span><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:58px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">11</span><div style="position:relative;border-top:2px dashed var(--accent-soft)"><div style="position:absolute;inset:2px;border:2px solid var(--lav);border-radius:12px;background:var(--lav-soft);padding:6px;display:flex;align-items:center;transform:rotate(.8deg)"><span style="font-size:10.5px;font-weight:800;color:var(--lav-ink);line-height:1.15">현대 사회와 윤리</span></div></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:58px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">12</span><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:58px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">13</span><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:58px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">14</span><div style="position:relative;border-top:2px dashed var(--accent-soft)"><div style="position:absolute;inset:2px;border:2px solid var(--accent);border-radius:12px;background:var(--surface-2);padding:6px;display:flex;align-items:center;transform:rotate(-.6deg)"><span style="font-size:10.5px;font-weight:800;color:var(--accent-ink);line-height:1.15">확률과 통계</span></div></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+<div style="display:grid;grid-template-columns:30px repeat(5,1fr);gap:2px;height:34px"><span style="font-size:10.5px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums">15</span><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div><div style="border-top:2px dashed var(--accent-soft)"></div></div>
+</div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">오늘 수업 <span style="font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">3개</span></p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="border:2px solid var(--done);border-radius:18px;background:var(--done-soft);padding:14px;transform:rotate(-.8deg)"><div style="display:flex;align-items:center;gap:12px"><span style="width:12px;height:12px;border-radius:50%;background:var(--done);flex:none"></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700;color:var(--done-ink)">데이터 구조</p><p style="margin:2px 0 0;display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--muted)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>공학관 301</p></div><span style="flex:none;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums">09:00 – 10:15</span></div></div>
+<div style="border:2px solid var(--lav);border-radius:18px;background:var(--lav-soft);padding:14px;transform:rotate(.7deg)"><div style="display:flex;align-items:center;gap:12px"><span style="width:12px;height:12px;border-radius:50%;background:var(--lav);flex:none"></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700;color:var(--lav-ink)">현대 사회와 윤리</p><p style="margin:2px 0 0;display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--muted)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>인문관 204</p></div><span style="flex:none;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums">11:00 – 12:15</span></div></div>
+<div style="border:2px solid var(--accent);border-radius:18px;background:var(--surface-2);padding:14px;transform:rotate(-.5deg)"><div style="display:flex;align-items:center;gap:12px"><span style="width:12px;height:12px;border-radius:50%;background:var(--accent);flex:none"></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700;color:var(--accent-ink)">확률과 통계</p><p style="margin:2px 0 0;display:flex;align-items:center;gap:4px;font-size:11.5px;color:var(--muted)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>자연관 112</p></div><span style="flex:none;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums">14:00 – 15:15</span></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isStudy }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;border:2px solid var(--line);border-radius:22px;background:var(--surface);padding:20px 18px 18px;box-shadow:var(--shadow);transform:rotate(-1.1deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-2deg);padding:0 12px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em;white-space:nowrap">STUDY LOG</span>
+<h1 class="fpt" style="margin:0;font-weight:600;font-size:22px;color:var(--accent-ink)">공부 계획</h1>
+<p style="margin:6px 0 14px;font-size:12.5px;color:var(--muted)">오늘 2세션 · 1시간 30분 · 완료 {{ sessionsDone }}/2</p>
+<div style="display:flex;gap:8px">
+<div style="flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--surface-2)"><p style="margin:0;font-size:11px;font-weight:800;color:var(--accent-ink)">이번 주</p><p class="fpt" style="margin:2px 0 0;font-weight:600;font-size:18px;font-variant-numeric:tabular-nums">6시간</p></div>
+<div style="flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--done-soft)"><p style="margin:0;font-size:11px;font-weight:800;color:var(--done-ink)">완료 세션</p><p class="fpt" style="margin:2px 0 0;font-weight:600;font-size:18px;font-variant-numeric:tabular-nums">{{ sessionsDone }}개</p></div>
+</div></div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">오늘 세션</p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="border:2px solid var(--accent);border-radius:18px;background:var(--surface-2);padding:14px;transform:rotate(-.8deg);box-shadow:0 2px 6px rgba(255,127,178,.14)">
+<div style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16"></path><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:11px;font-weight:800;color:var(--accent-ink)">확률과 통계</p><p style="margin:2px 0 0;font-size:13.5px;font-weight:700">중간고사 핵심 공식 정리</p></div><div style="flex:none;text-align:right"><p style="margin:0;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums">16:00</p><p style="margin:0;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums">50분</p></div></div>
+<button type="button" onClick="{{ startFocus }}" style="margin-top:10px;width:100%;min-height:42px;border:2px solid var(--accent-ink);border-radius:999px;background:var(--accent);color:#fff;font-family:Fredoka,sans-serif;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>지금 시작</button>
+</div>
+<div style="border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:14px;transform:rotate(.7deg);box-shadow:0 2px 6px rgba(255,127,178,.14)">
+<div style="display:flex;align-items:center;gap:12px"><span style="width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--done-soft);color:var(--done-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16"></path><path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:11px;font-weight:800;color:var(--done-ink)">데이터 구조</p><p style="margin:2px 0 0;font-size:13.5px;font-weight:700">그래프 탐색 문제 풀이</p></div><div style="flex:none;text-align:right"><p style="margin:0;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums">20:00</p><p style="margin:0;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums">40분</p></div></div>
+<button type="button" onClick="{{ startSecond }}" style="margin-top:10px;width:100%;min-height:42px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--accent-ink);font-family:Fredoka,sans-serif;font-weight:600;font-size:13px;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>먼저 시작하기</button>
+</div>
+</div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">과목별 이번 주 배분</p>
+<div style="display:flex;flex-direction:column;gap:12px">
+<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:5px"><span>확률과 통계</span><span style="color:var(--muted);font-variant-numeric:tabular-nums">3시간</span></div><div style="height:10px;border-radius:999px;background:var(--accent-soft);overflow:hidden"><div style="height:100%;width:50%;border-radius:999px;background:var(--accent)"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:5px"><span>데이터 구조</span><span style="color:var(--muted);font-variant-numeric:tabular-nums">2시간</span></div><div style="height:10px;border-radius:999px;background:var(--accent-soft);overflow:hidden"><div style="height:100%;width:33%;border-radius:999px;background:var(--done)"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-bottom:5px"><span>현대 사회와 윤리</span><span style="color:var(--muted);font-variant-numeric:tabular-nums">1시간</span></div><div style="height:10px;border-radius:999px;background:var(--accent-soft);overflow:hidden"><div style="height:100%;width:17%;border-radius:999px;background:var(--lav)"></div></div></div>
+</div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">다가오는 시험</p>
+<div style="border:2px solid var(--now);border-radius:18px;background:var(--surface);padding:14px;transform:rotate(-.6deg)"><div style="display:flex;align-items:center;gap:12px"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--now-soft);color:var(--now-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2 2"></path><path d="M5 3 2 6"></path><path d="m22 6-3-3"></path><path d="M6.38 18.7 4 21"></path><path d="M17.64 18.67 20 21"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">중간고사</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">확률과 통계 · 9월 14일</p></div><span style="flex:none;border-radius:999px;background:var(--now);color:#4a2a12;font-size:11.5px;font-weight:800;padding:4px 10px;font-variant-numeric:tabular-nums">D-7</span></div></div>
+</sc-if>
+
+<sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;border:2px solid var(--line);border-radius:22px;background:var(--surface);padding:20px 16px 16px;box-shadow:var(--shadow);transform:rotate(-.8deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-2deg);padding:0 12px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em;white-space:nowrap">SEPTEMBER</span>
+<div style="display:flex;align-items:center;justify-content:space-between">
+<span style="width:36px;height:36px;display:grid;place-items:center;border-radius:999px;border:2px solid var(--line);color:var(--muted)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></span>
+<h1 class="fpt" style="margin:0;font-weight:600;font-size:20px;color:var(--accent-ink)">9월 2026</h1>
+<span style="width:36px;height:36px;display:grid;place-items:center;border-radius:999px;border:2px solid var(--accent);background:var(--surface-2);color:var(--accent-ink)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span>
+</div>
+<div style="margin-top:14px;display:grid;grid-template-columns:repeat(7,1fr);gap:2px"><span style="text-align:center;font-size:11px;font-weight:800;color:var(--accent-ink)">일</span><span style="text-align:center;font-size:11px;font-weight:800;color:var(--muted)">월</span><span style="text-align:center;font-size:11px;font-weight:800;color:var(--muted)">화</span><span style="text-align:center;font-size:11px;font-weight:800;color:var(--muted)">수</span><span style="text-align:center;font-size:11px;font-weight:800;color:var(--muted)">목</span><span style="text-align:center;font-size:11px;font-weight:800;color:var(--muted)">금</span><span style="text-align:center;font-size:11px;font-weight:800;color:var(--muted)">토</span></div>
+<div style="margin-top:6px;display:grid;grid-template-columns:repeat(7,1fr);gap:2px">
+<sc-for list="{{ calCells }}" as="cell" hint-placeholder-count="32">
+<button type="button" onClick="{{ cell.pick }}" style="{{ cell.style }}">{{ cell.label }}<span style="{{ cell.dotStyle }}"></span></button>
+</sc-for>
+</div>
+<div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;font-size:10.5px;font-weight:700;color:var(--muted);border-top:2px dashed var(--line);padding-top:10px">
+<span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent)"></span>수업</span>
+<span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:var(--now)"></span>과제·시험</span>
+<span style="display:flex;align-items:center;gap:5px"><span style="width:7px;height:7px;border-radius:50%;background:var(--lav)"></span>제출</span>
+</div></div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">{{ calTitle }} <span style="font-family:Nunito,sans-serif;font-size:12px;font-weight:700;color:var(--muted)">{{ calCount }}</span></p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ calEvents }}" as="ev" hint-placeholder-count="3">
+<div style="{{ ev.cardStyle }}"><div style="display:flex;gap:10px"><span style="font-size:12px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;width:42px;flex:none">{{ ev.time }}</span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">{{ ev.title }}</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">{{ ev.meta }}</p></div></div></div>
+</sc-for>
+</div>
+<sc-if value="{{ calEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="border:2px dashed var(--line);border-radius:18px;padding:26px 18px;text-align:center;font-size:12.5px;color:var(--muted)">이 날은 일정이 없어요. 쉬어도 좋아요!</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;border:2px solid var(--line);border-radius:22px;background:var(--surface);padding:22px 18px 18px;box-shadow:var(--shadow);transform:rotate(-1deg)">
+<span style="position:absolute;left:50%;top:-11px;transform:translateX(-50%) rotate(-2deg);padding:0 12px;height:22px;background:var(--accent-soft);border:2px dashed var(--accent);border-radius:4px;font-size:10px;font-weight:800;color:var(--accent-ink);display:grid;place-items:center;letter-spacing:.1em;white-space:nowrap">SETTINGS</span>
+<div style="display:flex;align-items:center;gap:14px">
+<span class="fpt" style="width:58px;height:58px;flex:none;display:grid;place-items:center;border-radius:999px;border:2px solid var(--accent);background:var(--surface-2);color:var(--accent-ink);font-weight:600;font-size:22px">민</span>
+<div style="min-width:0"><p class="fpt" style="margin:0;font-weight:600;font-size:19px">민준</p><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">minjun@focusplan.app</p></div>
+</div></div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">테마</p>
+<div style="display:flex;gap:7px">
+<button type="button" onClick="{{ setSystem }}" style="{{ themeBtn0 }}">시스템</button>
+<button type="button" onClick="{{ setLight }}" style="{{ themeBtn1 }}">라이트</button>
+<button type="button" onClick="{{ setDark }}" style="{{ themeBtn2 }}">다크</button>
+</div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">알림</p>
+<div style="border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:2px 16px;box-shadow:0 2px 6px rgba(255,127,178,.14);transform:rotate(-.5deg)">
+<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:2px dashed var(--line)"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">수업 시작 알림</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">10분 전에 알려줘요</p></div><button type="button" onClick="{{ toggleNotifClass }}" aria-label="수업 시작 알림 켜기" style="{{ swClassTrack }}"><span style="{{ swClassKnob }}"></span></button></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:2px dashed var(--line)"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2 2"></path><path d="M5 3 2 6"></path><path d="m22 6-3-3"></path><path d="M6.38 18.7 4 21"></path><path d="M17.64 18.67 20 21"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">과제 마감 알림</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">D-3부터 매일</p></div><button type="button" onClick="{{ toggleNotifTask }}" aria-label="과제 마감 알림 켜기" style="{{ swTaskTrack }}"><span style="{{ swTaskKnob }}"></span></button></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 0"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0 5 5 0 0 1 1-3 1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">공부 세션 리마인더</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">시작 5분 전</p></div><button type="button" onClick="{{ toggleNotifStudy }}" aria-label="공부 세션 리마인더 켜기" style="{{ swStudyTrack }}"><span style="{{ swStudyKnob }}"></span></button></div>
+</div>
+<p class="fpt" style="margin:22px 0 10px;font-weight:600;font-size:15px;color:var(--accent-ink)">학업</p>
+<div style="border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:2px 16px;box-shadow:0 2px 6px rgba(255,127,178,.14);transform:rotate(.6deg)">
+<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:2px dashed var(--line)"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path><path d="M22 10v6"></path><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">과목 · 시간표</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">과목 3개 · 수업 3개 · 색상 관리</p></div><span style="color:var(--muted)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:2px dashed var(--line)"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v16"></path><path d="m16 12 2 2 4-4"></path><path d="M22 6V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2h4.001A2 2 0 0022 17v-1.344"></path></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">기본 세션 길이</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">50분 · 새 공부 계획에 적용</p></div><span style="color:var(--muted)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></div>
+<div style="display:flex;align-items:center;gap:12px;padding:14px 0"><span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface-2);color:var(--accent-ink)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><div style="flex:1;min-width:0"><p style="margin:0;font-size:13.5px;font-weight:700">시간대</p><p style="margin:2px 0 0;font-size:11.5px;color:var(--muted)">Asia/Seoul</p></div><span style="color:var(--muted)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg></span></div>
+</div>
+<button type="button" onClick="{{ replayOnboarding }}" style="margin-top:18px;width:100%;min-height:46px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-family:Fredoka,sans-serif;font-weight:600;font-size:13.5px;cursor:pointer">온보딩 다시 보기</button>
+<p style="margin:16px 0 0;text-align:center;font-size:11.5px;color:var(--muted)">FocusPlan · MVP 0.1</p>
+</sc-if>
+</div>
+
+<sc-if value="{{ showFab }}" hint-placeholder-val="{{ true }}">
+<button type="button" onClick="{{ openSheet }}" aria-label="새 할 일 추가" style="position:absolute;right:20px;bottom:24px;width:60px;height:60px;border-radius:999px;border:2px solid var(--accent-ink);background:var(--accent);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 8px 20px rgba(255,127,178,.45)"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</sc-if>
+
+<sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--veil);animation:fp-fade .2s ease" onClick="{{ closeSheet }}"></div>
+<div style="position:absolute;left:0;right:0;bottom:0;border:2px solid var(--line);border-bottom:0;border-radius:26px 26px 0 0;background:var(--surface);padding:14px 18px 22px;box-shadow:0 -14px 34px rgba(255,127,178,.24);animation:fp-sheet .26s cubic-bezier(.22,1,.36,1)">
+<span style="display:block;width:44px;height:5px;border-radius:999px;background:var(--line);margin:0 auto 14px"></span>
+<div style="display:flex;align-items:center;justify-content:space-between">
+<h2 class="fpt" style="margin:0;font-weight:600;font-size:18px;color:var(--accent-ink)">새 할 일</h2>
+<button type="button" onClick="{{ closeSheet }}" aria-label="닫기" style="width:34px;height:34px;display:grid;place-items:center;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<p style="margin:16px 0 6px;font-size:11.5px;font-weight:800;color:var(--muted)">할 일</p>
+<input type="text" value="{{ draftTitle }}" onChange="{{ setDraftTitle }}" placeholder="무엇을 할까요?" style="width:100%;border:2px solid var(--accent);border-radius:999px;padding:13px 18px;font-size:14px;font-weight:700;color:var(--ink);background:var(--surface);box-shadow:0 0 0 3px var(--accent-soft)">
+<p style="margin:16px 0 6px;font-size:11.5px;font-weight:800;color:var(--muted)">과목</p>
+<div class="scr" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:2px">
+<sc-for list="{{ courseChips }}" as="c" hint-placeholder-count="4">
+<button type="button" onClick="{{ c.pick }}" style="{{ c.style }}">{{ c.label }}</button>
+</sc-for>
+</div>
+<p style="margin:16px 0 6px;font-size:11.5px;font-weight:800;color:var(--muted)">우선순위</p>
+<div style="display:flex;gap:7px">
+<sc-for list="{{ prioChips }}" as="p" hint-placeholder-count="3">
+<button type="button" onClick="{{ p.pick }}" style="{{ p.style }}">{{ p.label }}</button>
+</sc-for>
+</div>
+<p style="margin:16px 0 6px;font-size:11.5px;font-weight:800;color:var(--muted)">마감</p>
+<div style="display:flex;gap:7px">
+<sc-for list="{{ dueChips }}" as="d" hint-placeholder-count="3">
+<button type="button" onClick="{{ d.pick }}" style="{{ d.style }}">{{ d.label }}</button>
+</sc-for>
+</div>
+<div style="display:flex;gap:10px;margin-top:20px">
+<button type="button" onClick="{{ closeSheet }}" style="flex:none;min-height:52px;padding:0 20px;border:2px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);font-family:Fredoka,sans-serif;font-weight:600;font-size:14px;cursor:pointer">취소</button>
+<button type="button" onClick="{{ addTask }}" style="{{ addBtnStyle }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>추가하기</button>
+</div></div>
+</sc-if>
+
+<sc-if value="{{ focusOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 46%),var(--bg);display:flex;flex-direction:column;overflow-y:auto;padding:22px 22px 28px;animation:fp-rise .3s cubic-bezier(.22,1,.36,1)">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<button type="button" onClick="{{ closeFocus }}" aria-label="닫기" style="width:40px;height:40px;display:grid;place-items:center;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--muted);cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+<span style="display:flex;align-items:center;gap:6px;border:2px solid var(--line);border-radius:999px;background:var(--surface-2);padding:6px 14px;font-size:11.5px;font-weight:800;color:var(--accent-ink)">{{ focusCourse }}</span>
+<span style="width:40px"></span>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+<p class="fpt" style="margin:0;font-weight:600;font-size:19px">{{ focusTitle }}</p>
+<p style="margin:4px 0 0;font-size:12.5px;color:var(--muted)">{{ focusMeta }}</p>
+<div style="position:relative;width:250px;height:250px;margin:22px auto 0;display:grid;place-items:center">
+<svg viewBox="0 0 240 240" width="250" height="250" style="transform:rotate(-90deg)"><circle cx="120" cy="120" r="104" fill="none" stroke="var(--accent-soft)" stroke-width="16"></circle><circle cx="120" cy="120" r="104" fill="none" stroke="var(--accent)" stroke-width="16" stroke-linecap="round" stroke-dasharray="653.45" stroke-dashoffset="{{ timerOffset }}"></circle></svg>
+<div style="position:absolute;text-align:center">
+<p class="fpt" style="margin:0;font-weight:600;font-size:50px;line-height:1;color:var(--accent-ink);font-variant-numeric:tabular-nums">{{ timerText }}</p>
+<p style="margin:6px 0 0;font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--muted)">{{ timerState }}</p>
+</div></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px">
+<button type="button" onClick="{{ resetTimer }}" aria-label="다시 시작" style="width:52px;height:52px;border-radius:999px;border:2px solid var(--line);background:var(--surface);color:var(--muted);display:grid;place-items:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button>
+<button type="button" onClick="{{ toggleTimer }}" style="min-width:152px;min-height:56px;border-radius:999px;border:2px solid var(--accent-ink);background:var(--accent);color:#fff;font-family:Fredoka,sans-serif;font-weight:600;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;box-shadow:0 8px 20px rgba(255,127,178,.35)">
+<sc-if value="{{ timerRunning }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="3" width="5" height="18" rx="1"></rect><rect x="5" y="3" width="5" height="18" rx="1"></rect></svg>일시정지</sc-if>
+<sc-if value="{{ timerIdle }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"></path></svg>{{ startLabel }}</sc-if>
+</button>
+<button type="button" onClick="{{ completeFocus }}" aria-label="세션 완료" style="width:52px;height:52px;border-radius:999px;border:2px solid var(--done);background:var(--done-soft);color:var(--done-ink);display:grid;place-items:center;cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></button>
+</div>
+</div>
+<div style="border-top:2px dashed var(--line);padding-top:14px">
+<p class="fpt" style="margin:0 0 8px;font-weight:600;font-size:14px;color:var(--accent-ink)">이 세션에서 할 것</p>
+<div style="display:flex;flex-direction:column;gap:8px">
+<sc-for list="{{ focusTasks }}" as="task" hint-placeholder-count="2">
+<label style="display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:14px;background:var(--surface);padding:10px 12px;cursor:pointer"><input class="fpc" type="checkbox" checked="{{ task.done }}" onChange="{{ task.toggle }}"><span style="{{ task.titleStyle }}">{{ task.title }}</span></label>
+</sc-for>
+</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;left:50%;bottom:98px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;border:2px solid var(--done);border-radius:999px;background:var(--done-soft);color:var(--done-ink);padding:10px 18px;font-size:13px;font-weight:800;box-shadow:var(--shadow);animation:fp-rise .24s ease;white-space:nowrap">{{ toastText }}</div>
+</sc-if>
+
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:440,&quot;height&quot;:900}}">
+const STORE = "focusplan-kitty-v1";
+const COURSES = ["데이터 구조", "확률과 통계", "현대 사회와 윤리"];
+const SEED = [
+  { id: "task-1", title: "연결 리스트 복습", course: "데이터 구조", due: "오전 11:00", done: true, priority: null },
+  { id: "task-2", title: "통계 연습문제 5–12번", course: "확률과 통계", due: "오후 6:00", done: false, priority: "높음" },
+  { id: "task-3", title: "팀 프로젝트 자료 조사", course: null, due: "오늘", done: false, priority: "보통" },
+];
+const OB = [
+  { tape: "WELCOME", title: "수업·할 일·공부를\n한 권에 담아요", body: "시간표에서 오늘 할 일까지, 부담 없이 계획한 만큼만. 매일 아침 딱 필요한 것만 보여드려요.", cta: "다음" },
+  { tape: "PLAN", title: "오늘 할 일은\n딱 세 가지만", body: "과목과 우선순위로 정리하고, 체크할 때마다 진행률이 바로 채워져요.", cta: "다음" },
+  { tape: "FOCUS", title: "50분 집중,\n타이머가 함께", body: "공부 계획을 누르면 바로 타이머가 시작돼요. 끝나면 오늘 진행률에 반영됩니다.", cta: "시작하기" },
+];
+const DAY_EVENTS = {
+  7: [
+    { time: "09:00", title: "데이터 구조", meta: "수업 · 공학관 301", tone: "done" },
+    { time: "11:00", title: "현대 사회와 윤리", meta: "수업 · 인문관 204 · 진행 중", tone: "now" },
+    { time: "14:00", title: "확률과 통계", meta: "수업 · 자연관 112", tone: "accent" },
+    { time: "16:00", title: "중간고사 핵심 공식 정리", meta: "공부 50분 · 확률과 통계", tone: "plain" },
+    { time: "20:00", title: "그래프 탐색 문제 풀이", meta: "공부 40분 · 데이터 구조", tone: "plain" },
+  ],
+  10: [{ time: "23:59", title: "AVL 트리 구현", meta: "과제 마감 · 데이터 구조", tone: "now" }],
+  14: [{ time: "10:00", title: "중간고사", meta: "시험 · 확률과 통계", tone: "now" }],
+  17: [{ time: "23:59", title: "에세이 초안", meta: "과제 제출 · 현대 사회와 윤리", tone: "lav" }],
+};
+const MARKS = { 7: "var(--accent)", 10: "var(--now)", 14: "var(--now)", 17: "var(--lav)" };
+
+class Component extends DCLogic {
+  state = {
+    route: "today", onboarded: true, obStep: 0,
+    tasks: SEED.map((t) => ({ ...t })),
+    filter: "전체", sheetOpen: false,
+    draftTitle: "", draftCourse: "데이터 구조", draftPriority: "보통", draftDue: "오늘",
+    focusOpen: false, focusIndex: 0, secs: 3000, running: false, sessionsDone: 0,
+    theme: "system", notifClass: true, notifTask: true, notifStudy: false,
+    calDay: 7, toastText: "",
+  };
+
+  componentDidMount() {
+    try {
+      const raw = localStorage.getItem(STORE);
+      if (raw) {
+        const s = JSON.parse(raw);
+        this.setState({
+          onboarded: s.onboarded !== false,
+          theme: s.theme || "system",
+          tasks: Array.isArray(s.tasks) && s.tasks.length ? s.tasks : SEED.map((t) => ({ ...t })),
+          sessionsDone: s.sessionsDone || 0,
+          notifClass: s.notifClass !== false, notifTask: s.notifTask !== false, notifStudy: !!s.notifStudy,
+        });
+      } else {
+        this.setState({ onboarded: false });
+      }
+    } catch (e) { this.setState({ onboarded: false }); }
+  }
+  componentWillUnmount() { clearInterval(this._iv); clearTimeout(this._toast); }
+
+  persist(extra) {
+    const s = { ...this.state, ...extra };
+    try {
+      localStorage.setItem(STORE, JSON.stringify({
+        onboarded: s.onboarded, theme: s.theme, tasks: s.tasks,
+        sessionsDone: s.sessionsDone, notifClass: s.notifClass, notifTask: s.notifTask, notifStudy: s.notifStudy,
+      }));
+    } catch (e) {}
+  }
+  set(patch) { this.setState(patch, () => this.persist()); }
+  toast(text) {
+    clearTimeout(this._toast);
+    this.setState({ toastText: text });
+    this._toast = setTimeout(() => this.setState({ toastText: "" }), 2200);
+  }
+  toggleTask = (id) => {
+    this.setState((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, done: !t.done } : t)) }), () => this.persist());
+  };
+
+  tick = () => this.setState((s) => {
+    if (s.secs <= 1) { clearInterval(this._iv); return { secs: 0, running: false }; }
+    return { secs: s.secs - 1 };
+  });
+  toggleTimer = () => {
+    clearInterval(this._iv);
+    if (this.state.running) { this.setState({ running: false }); return; }
+    this._iv = setInterval(this.tick, 1000);
+    this.setState({ running: true });
+  };
+  openFocus = (i) => {
+    clearInterval(this._iv);
+    this.setState({ focusOpen: true, focusIndex: i, secs: i === 0 ? 3000 : 2400, running: false });
+  };
+
+  chip(label, active, onPick, extra) {
+    return {
+      label, pick: onPick,
+      style: `flex:none;border:2px solid ${active ? "var(--accent)" : "var(--line)"};border-radius:999px;background:${active ? "var(--accent)" : "var(--surface)"};color:${active ? "#fff" : "var(--muted)"};padding:8px 15px;font-family:Fredoka,sans-serif;font-weight:${active ? 600 : 500};font-size:12.5px;cursor:pointer;white-space:nowrap;${extra || ""}`,
+    };
+  }
+  taskVm(t, i) {
+    const badge = t.priority === "높음"
+      ? "border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;padding:2px 7px"
+      : t.priority === "보통"
+        ? "border-radius:999px;background:var(--now-soft);color:var(--now-ink);font-weight:800;padding:2px 7px"
+        : "display:none";
+    return {
+      id: t.id, title: t.title, done: t.done,
+      meta: (t.course ? t.course + " · " : "") + t.due,
+      badge: t.priority || "",
+      badgeStyle: badge,
+      toggle: () => this.toggleTask(t.id),
+      cardStyle: `display:flex;align-items:flex-start;gap:12px;border:2px solid var(--line);border-radius:18px;background:var(--surface);padding:14px;cursor:pointer;transform:rotate(${(i % 3 === 0 ? -0.7 : i % 3 === 1 ? 0.6 : -0.4)}deg);box-shadow:0 2px 6px rgba(255,127,178,.14)`,
+      titleStyle: `display:block;font-size:14px;font-weight:700;color:${t.done ? "var(--muted)" : "var(--ink)"};text-decoration:${t.done ? "line-through" : "none"}`,
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const tasksDone = s.tasks.filter((t) => t.done).length;
+    const classesDone = 1; // 09:00 데이터 구조 종료 (현재 10:24)
+    const done = classesDone + tasksDone + s.sessionsDone;
+    const total = 3 + s.tasks.length + 2; // 수업 3 + 할 일 + 공부 세션 2
+    const pct = Math.round((done / total) * 100);
+    const mm = String(Math.floor(s.secs / 60)).padStart(2, "0");
+    const ss = String(s.secs % 60).padStart(2, "0");
+    const hearts = React.createElement(React.Fragment, null,
+      Array.from({ length: total }, (_, i) => React.createElement("span", {
+        key: i,
+        style: {
+          width: 15, height: 15, display: "inline-block",
+          background: i < done ? "var(--accent)" : "var(--accent-soft)",
+          WebkitMaskImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21s-8-5.4-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.6-8 11-8 11z'/%3E%3C/svg%3E\")",
+          maskImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21s-8-5.4-8-11a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 5.6-8 11-8 11z'/%3E%3C/svg%3E\")",
+          WebkitMaskSize: "contain", maskSize: "contain", maskRepeat: "no-repeat",
+        },
+      })));
+
+    const tab = (key, rot) => {
+      const active = s.route === key;
+      return `flex:none;min-height:44px;display:flex;align-items:center;gap:6px;padding:0 ${active ? 18 : 16}px;border:2px solid ${active ? "var(--accent)" : "var(--line)"};border-bottom:0;border-radius:18px 18px 0 0;background:${active ? "var(--accent)" : "var(--surface-2)"};color:${active ? "#fff" : "var(--muted)"};font-family:Fredoka,sans-serif;font-weight:${active ? 600 : 500};font-size:13px;cursor:pointer;transform:${active ? "translateY(-3px) " : ""}rotate(${rot}deg)`;
+    };
+    const themeBtn = (v) => {
+      const on = s.theme === v;
+      return `flex:1;min-height:44px;border:2px solid ${on ? "var(--accent)" : "var(--line)"};border-radius:999px;background:${on ? "var(--accent)" : "var(--surface)"};color:${on ? "#fff" : "var(--muted)"};font-family:Fredoka,sans-serif;font-weight:600;font-size:13px;cursor:pointer`;
+    };
+    const track = (on) => `flex:none;width:48px;height:28px;border-radius:999px;background:${on ? "var(--accent)" : "var(--surface-2)"};border:2px solid ${on ? "var(--accent-ink)" : "var(--line)"};display:flex;align-items:center;justify-content:${on ? "flex-end" : "flex-start"};padding:0 3px;cursor:pointer;transition:background .18s`;
+    const knob = "width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(255,127,178,.4)";
+
+    const filters = ["전체", "오늘"].concat(COURSES).map((f) =>
+      this.chip(f, s.filter === f, () => this.setState({ filter: f })));
+    const visible = s.tasks.filter((t) => s.filter === "전체" || s.filter === "오늘" || t.course === s.filter);
+
+    const cells = [];
+    for (let i = 0; i < 2; i++) cells.push({ label: "", pick: () => {}, style: "border:0;background:none", dotStyle: "display:none" });
+    for (let d = 1; d <= 30; d++) {
+      const sel = d === s.calDay;
+      cells.push({
+        label: String(d),
+        pick: () => this.setState({ calDay: d }),
+        style: `position:relative;height:44px;display:grid;place-items:center;border:0;border-radius:14px;background:${sel ? "var(--accent)" : "transparent"};color:${sel ? "#fff" : "var(--ink)"};font-weight:${sel ? 800 : 600};font-size:13.5px;font-variant-numeric:tabular-nums;cursor:pointer;font-family:inherit;${sel ? "transform:rotate(-2deg);box-shadow:0 2px 6px rgba(255,127,178,.4)" : ""}`,
+        dotStyle: MARKS[d] && !sel
+          ? `position:absolute;bottom:6px;width:5px;height:5px;border-radius:50%;background:${MARKS[d]}`
+          : "display:none",
+      });
+    }
+    const evTone = { done: ["var(--done-soft)", "var(--done)"], now: ["var(--now-soft)", "var(--now)"], accent: ["var(--surface-2)", "var(--accent)"], lav: ["var(--lav-soft)", "var(--lav)"], plain: ["var(--surface)", "var(--line)"] };
+    const events = (DAY_EVENTS[s.calDay] || []).map((e, i) => ({
+      ...e,
+      cardStyle: `border:2px solid ${evTone[e.tone][1]};border-radius:18px;background:${evTone[e.tone][0]};padding:14px;transform:rotate(${i % 2 ? 0.7 : -0.6}deg);box-shadow:0 2px 6px rgba(255,127,178,.12)`,
+    }));
+
+    const ob = OB[Math.min(s.obStep, 2)];
+    const focusSessions = [
+      { course: "확률과 통계", title: "중간고사 핵심 공식 정리", meta: "16:00 시작 · 50분 세션" },
+      { course: "데이터 구조", title: "그래프 탐색 문제 풀이", meta: "20:00 시작 · 40분 세션" },
+    ];
+    const fs = focusSessions[s.focusIndex];
+    const fullSecs = s.focusIndex === 0 ? 3000 : 2400;
+
+    return {
+      theme: s.theme,
+      onboarding: !s.onboarded, inApp: s.onboarded,
+      obTape: ob.tape, obTitle: ob.title, obBody: ob.body, obCta: ob.cta,
+      obDot0: s.obStep === 0 ? "var(--accent)" : "var(--line)", obDot0w: s.obStep === 0 ? "26px" : "8px",
+      obDot1: s.obStep === 1 ? "var(--accent)" : "var(--line)", obDot1w: s.obStep === 1 ? "26px" : "8px",
+      obDot2: s.obStep === 2 ? "var(--accent)" : "var(--line)", obDot2w: s.obStep === 2 ? "26px" : "8px",
+      obNext: () => (s.obStep >= 2 ? this.set({ onboarded: true, obStep: 0 }) : this.setState({ obStep: s.obStep + 1 })),
+      finishOnboarding: () => this.set({ onboarded: true, obStep: 0 }),
+      replayOnboarding: () => this.set({ onboarded: false, obStep: 0, route: "today" }),
+
+      isToday: s.route === "today", isTasks: s.route === "tasks", isTimetable: s.route === "timetable",
+      isStudy: s.route === "study", isCalendar: s.route === "calendar", isSettings: s.route === "settings",
+      showFab: s.route === "today" || s.route === "tasks",
+      goToday: () => this.setState({ route: "today" }), goTasks: () => this.setState({ route: "tasks" }),
+      goTimetable: () => this.setState({ route: "timetable" }), goStudy: () => this.setState({ route: "study" }),
+      goCalendar: () => this.setState({ route: "calendar" }), goSettings: () => this.setState({ route: "settings" }),
+      tab0: tab("today", -1.5), tab1: tab("tasks", 0.8), tab2: tab("timetable", -0.6), tab3: tab("study", 1), tab4: tab("calendar", 0),
+
+      pct, doneCount: done, totalCount: total, hearts,
+      cheer: done >= total ? "오늘 계획 다 했어요!" : pct >= 60 ? "좋은 흐름이에요" : "천천히 시작해봐요",
+      taskRatio: tasksDone + "/" + s.tasks.length,
+      taskLeft: s.tasks.length - tasksDone,
+      tasks: s.tasks.map((t, i) => this.taskVm(t, i)),
+      filteredTasks: visible.map((t, i) => this.taskVm(t, i)),
+      noTasks: visible.length === 0,
+      filters, filterTitle: s.filter === "전체" ? "오늘 마감" : s.filter,
+
+      sheetOpen: s.sheetOpen,
+      openSheet: () => this.setState({ sheetOpen: true }),
+      closeSheet: () => this.setState({ sheetOpen: false, draftTitle: "" }),
+      draftTitle: s.draftTitle,
+      setDraftTitle: (e) => this.setState({ draftTitle: e.target.value }),
+      courseChips: COURSES.concat(["없음"]).map((c) => this.chip(c, s.draftCourse === c, () => this.setState({ draftCourse: c }))),
+      prioChips: ["높음", "보통", "낮음"].map((p) => this.chip(p, s.draftPriority === p, () => this.setState({ draftPriority: p }), "flex:1;justify-content:center;text-align:center")),
+      dueChips: ["오늘", "내일", "이번 주"].map((d) => this.chip(d, s.draftDue === d, () => this.setState({ draftDue: d }), "flex:1;justify-content:center;text-align:center")),
+      addBtnStyle: `flex:1;min-height:52px;border:2px solid var(--accent-ink);border-radius:999px;background:var(--accent);color:#fff;font-family:Fredoka,sans-serif;font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:${s.draftTitle.trim() ? "pointer" : "not-allowed"};opacity:${s.draftTitle.trim() ? 1 : 0.5};box-shadow:0 6px 16px rgba(255,127,178,.35)`,
+      addTask: () => {
+        const title = s.draftTitle.trim();
+        if (!title) return;
+        const t = {
+          id: "task-" + Date.now(), title, done: false,
+          course: s.draftCourse === "없음" ? null : s.draftCourse,
+          due: s.draftDue, priority: s.draftPriority === "낮음" ? null : s.draftPriority,
+        };
+        this.setState((p) => ({ tasks: p.tasks.concat([t]), sheetOpen: false, draftTitle: "" }), () => { this.persist(); this.toast("할 일을 추가했어요"); });
+      },
+
+      focusOpen: s.focusOpen, focusCourse: fs.course, focusTitle: fs.title, focusMeta: fs.meta,
+      startFocus: () => this.openFocus(0), startSecond: () => this.openFocus(1),
+      closeFocus: () => { clearInterval(this._iv); this.setState({ focusOpen: false, running: false }); },
+      completeFocus: () => {
+        clearInterval(this._iv);
+        this.setState((p) => ({ focusOpen: false, running: false, sessionsDone: Math.min(2, p.sessionsDone + 1) }), () => { this.persist(); this.toast("세션 완료! 잘했어요"); });
+      },
+      timerText: mm + ":" + ss,
+      timerOffset: (653.45 * (1 - s.secs / fullSecs)).toFixed(2),
+      timerState: s.secs === 0 ? "세션 완료" : s.running ? "집중 중" : "대기 중",
+      timerRunning: s.running, timerIdle: !s.running,
+      startLabel: s.secs === fullSecs ? "시작하기" : "이어서",
+      toggleTimer: this.toggleTimer,
+      resetTimer: () => { clearInterval(this._iv); this.setState({ secs: fullSecs, running: false }); },
+      focusTasks: s.tasks.filter((t) => !t.done).slice(0, 2).map((t, i) => this.taskVm(t, i)),
+      sessionsDone: s.sessionsDone,
+
+      calCells: cells, calEvents: events, calEmpty: events.length === 0,
+      calTitle: "9월 " + s.calDay + "일",
+      calCount: events.length ? events.length + "개 일정" : "",
+
+      setSystem: () => this.set({ theme: "system" }), setLight: () => this.set({ theme: "light" }), setDark: () => this.set({ theme: "dark" }),
+      themeBtn0: themeBtn("system"), themeBtn1: themeBtn("light"), themeBtn2: themeBtn("dark"),
+      swClassTrack: track(s.notifClass), swClassKnob: knob,
+      swTaskTrack: track(s.notifTask), swTaskKnob: knob,
+      swStudyTrack: track(s.notifStudy), swStudyKnob: knob,
+      toggleNotifClass: () => this.set({ notifClass: !s.notifClass }),
+      toggleNotifTask: () => this.set({ notifTask: !s.notifTask }),
+      toggleNotifStudy: () => this.set({ notifStudy: !s.notifStudy }),
+
+      toast: !!s.toastText, toastText: s.toastText,
+    };
+  }
+}
+</script>
+</body>
+</html>

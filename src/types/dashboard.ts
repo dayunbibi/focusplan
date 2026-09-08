@@ -1,4 +1,4 @@
-export type CourseTone = "teal" | "blue" | "violet" | "amber" | "rose";
+export type CourseTone = "accent" | "done" | "lav";
 
 export interface TodayClass {
   id: string;
@@ -6,15 +6,6 @@ export interface TodayClass {
   time: string;
   location: string;
   tone: CourseTone;
-}
-
-export interface DashboardTask {
-  id: string;
-  title: string;
-  course?: string;
-  due: string;
-  completed: boolean;
-  priority?: "높음" | "보통";
 }
 
 export interface StudyPlanItem {
@@ -33,4 +24,22 @@ export interface UpcomingItem {
   course: string;
   date: string;
   daysLeft: number;
+}
+
+export type Priority = "높음" | "보통" | null;
+
+export interface Task {
+  id: string;
+  title: string;
+  course: string | null;
+  due: string;
+  done: boolean;
+  priority: Priority;
+}
+
+export interface CalendarEvent {
+  time: string;
+  title: string;
+  meta: string;
+  tone: CourseTone | "now" | "plain";
 }
