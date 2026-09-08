@@ -193,6 +193,14 @@ a {
   display: none;
 }
 
+.wheel-scroll {
+  scrollbar-width: none;
+  overscroll-behavior-block: contain;
+}
+.wheel-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

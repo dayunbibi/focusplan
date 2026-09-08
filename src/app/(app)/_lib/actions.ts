@@ -152,7 +152,7 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
 type ScheduleSlotInput = { weekday: number; startTime: string; endTime: string; location: string | null };
 
 const COURSE_PALETTE = ["#ff7fb2", "#5fd0a8", "#b79bec", "#ffb86b", "#7fb2ff", "#f2a6c9"];
-const VALID_TIME = /^(?:[01]\d|2[0-3]):(?:00|15|30|45)$/;
+const VALID_TIME = /^(?:[01]\d|2[0-3]):(?:0[05]|[1-5][05])$/;
 
 function validateSlot(slot: ScheduleSlotInput): string | null {
   if (!VALID_TIME.test(slot.startTime) || !VALID_TIME.test(slot.endTime)) return "시간 형식이 올바르지 않습니다.";
