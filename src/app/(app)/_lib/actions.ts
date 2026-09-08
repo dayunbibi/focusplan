@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { dueFromChoice } from "./date-utils";
+import { addDays, dateKey, dday, dueFromChoice, hhmm, isoWeekday, startOfToday, zonedDate } from "./date-utils";
 import { getCurrentUser } from "./queries";
 
 export type ActionResult<T extends object = object> =
@@ -354,6 +354,103 @@ export async function deleteStudySession(id: string): Promise<ActionResult> {
   if (!deleted.count) return { ok: false, error: "공부 세션을 찾을 수 없어요." };
   revalidateApp();
   return { ok: true };
+}
+
+const AI_PLAN_HORIZON_DAYS = 7;
+const AI_PLAN_SESSION_MIN = 50;
+const AI_PLAN_DAY_START_MIN = 9 * 60;
+const AI_PLAN_DAY_END_MIN = 23 * 60;
+
+function timeToMin(value: string) {
+  const [h, m] = value.split(":").map(Number);
+  return h * 60 + m;
+}
+
+/**
+ * 규칙 기반 자동 학습계획: 시간표와 기존 세션을 바쁜 시간으로 보고, 마감이 빠른
+ * 과제·시험부터 순서대로 빈 50분 슬롯에 채운다. 재생성 시 기존 AI 세션(미완료)은
+ * 지우고 다시 채우므로 여러 번 눌러도 안전하다.
+ * ponytail: 마감 시각·수업 유효기간(startsOn/endsOn)은 무시하는 단순 그리디 배치. 더 정교한
+ * 배분(우선순위, 공부량 추정)이 필요해지면 슬롯 탐색 로직을 교체한다.
+ */
+export async function generateAiStudyPlan(): Promise<ActionResult<{ created: number }>> {
+  const user = await getCurrentUser();
+  const tz = user.timezone;
+  const today = startOfToday(tz);
+  const horizonEnd = addDays(today, AI_PLAN_HORIZON_DAYS);
+
+  await prisma.studySession.deleteMany({
+    where: { userId: user.id, source: "AI", completedAt: null, plannedAt: { gte: today, lt: horizonEnd } },
+  });
+
+  const [assignments, exams, timetable, existingSessions] = await Promise.all([
+    prisma.assignment.findMany({ where: { userId: user.id, completedAt: null, dueAt: { gte: today, lt: horizonEnd } } }),
+    prisma.exam.findMany({ where: { userId: user.id, examAt: { gte: today, lt: horizonEnd } } }),
+    prisma.timetableEvent.findMany({ where: { userId: user.id } }),
+    prisma.studySession.findMany({ where: { userId: user.id, plannedAt: { gte: today, lt: horizonEnd } } }),
+  ]);
+
+  const busyByDay = new Map<string, [number, number][]>();
+  const addBusy = (key: string, start: number, end: number) => {
+    const list = busyByDay.get(key) ?? [];
+    list.push([start, end]);
+    list.sort((a, b) => a[0] - b[0]);
+    busyByDay.set(key, list);
+  };
+  for (let i = 0; i < AI_PLAN_HORIZON_DAYS; i++) {
+    const date = addDays(today, i);
+    const key = dateKey(date, tz);
+    const weekday = isoWeekday(date, tz);
+    for (const ev of timetable) {
+      if (ev.weekday === weekday) addBusy(key, timeToMin(ev.startTime), timeToMin(ev.endTime));
+    }
+  }
+  for (const s of existingSessions) {
+    const key = dateKey(s.plannedAt, tz);
+    const start = timeToMin(hhmm(s.plannedAt, tz));
+    addBusy(key, start, start + s.durationMin);
+  }
+
+  function findSlot(dayIndex: number): { key: string; startMin: number } | null {
+    const key = dateKey(addDays(today, dayIndex), tz);
+    let cursor = AI_PLAN_DAY_START_MIN;
+    for (const [busyStart, busyEnd] of busyByDay.get(key) ?? []) {
+      if (cursor + AI_PLAN_SESSION_MIN <= busyStart) break;
+      if (cursor < busyEnd) cursor = busyEnd;
+    }
+    return cursor + AI_PLAN_SESSION_MIN <= AI_PLAN_DAY_END_MIN ? { key, startMin: cursor } : null;
+  }
+
+  type WorkItem = { title: string; courseId: string | null; deadline: Date; sessionsNeeded: number };
+  const items: WorkItem[] = [
+    ...assignments.map((a) => ({ title: `${a.title} 준비`, courseId: a.courseId, deadline: a.dueAt, sessionsNeeded: 2 })),
+    ...exams.map((e) => ({ title: `${e.title} 시험 공부`, courseId: e.courseId, deadline: e.examAt, sessionsNeeded: 3 })),
+  ].sort((a, b) => a.deadline.getTime() - b.deadline.getTime());
+
+  const rows: { userId: string; courseId: string | null; title: string; plannedAt: Date; durationMin: number; source: "AI" }[] = [];
+  for (const item of items) {
+    const deadlineDay = Math.min(AI_PLAN_HORIZON_DAYS - 1, Math.max(0, dday(item.deadline, tz)));
+    let placed = 0;
+    for (let day = 0; day <= deadlineDay && placed < item.sessionsNeeded; day++) {
+      const slot = findSlot(day);
+      if (!slot) continue;
+      addBusy(slot.key, slot.startMin, slot.startMin + AI_PLAN_SESSION_MIN);
+      const [year, month, dayOfMonth] = slot.key.split("-").map(Number);
+      rows.push({
+        userId: user.id,
+        courseId: item.courseId,
+        title: item.title,
+        plannedAt: zonedDate(year, month, dayOfMonth, Math.floor(slot.startMin / 60), slot.startMin % 60, tz),
+        durationMin: AI_PLAN_SESSION_MIN,
+        source: "AI",
+      });
+      placed++;
+    }
+  }
+
+  if (rows.length) await prisma.studySession.createMany({ data: rows });
+  revalidateApp();
+  return { ok: true, created: rows.length };
 }
 
 export async function updateProfile(input: { name: string; timezone: string }): Promise<ActionResult> {

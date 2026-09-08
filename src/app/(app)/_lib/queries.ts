@@ -345,6 +345,7 @@ export async function getStudyPlan() {
       plannedAt: session.plannedAt.toISOString(),
       durationMin: session.durationMin,
       done: session.completedAt != null,
+      ai: session.source === "AI",
     })),
     sessionsDone: todaySessions.filter((session) => session.done).length,
     plannedCount: todaySessions.length,

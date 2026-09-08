@@ -1,11 +1,17 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AlarmClock, BookOpen, Check, Pencil, Play, Plus, Save, Trash2, X } from "lucide-react";
+import { AlarmClock, BookOpen, Check, Pencil, Play, Plus, Save, Sparkles, Trash2, X } from "lucide-react";
 import { StickerCard } from "@/components/kitty/sticker-card";
 import { Mascot } from "@/components/kitty/mascot";
 import type { getStudyPlan } from "../_lib/queries";
-import { createStudySession, deleteStudySession, toggleStudySession, updateStudySession } from "../_lib/actions";
+import {
+  createStudySession,
+  deleteStudySession,
+  generateAiStudyPlan,
+  toggleStudySession,
+  updateStudySession,
+} from "../_lib/actions";
 import { useUi } from "../_lib/ui-store";
 import { SectionTitle } from "./section-title";
 
@@ -58,7 +64,7 @@ function SessionRow({ session, data, index }: { session: Session; data: StudyDat
   };
   return (
     <div style={{ transform: `rotate(${index % 2 ? 0.5 : -0.5}deg)` }} className={`rounded-[18px] border-2 ${session.done ? "border-done" : "border-border"} bg-surface p-3.5 ${pending ? "opacity-60" : ""}`}>
-      <div className="flex items-center gap-3"><button type="button" onClick={() => start(async () => { const result = await toggleStudySession(session.id); if (!result.ok) setError(result.error); })} className={`grid size-10 shrink-0 place-items-center rounded-xl bg-surface-soft ${session.done ? "text-done" : "text-primary"}`} aria-label={`${session.title} ${session.done ? "미완료" : "완료"} 처리`}>{session.done ? <Check size={18} aria-hidden="true" /> : <BookOpen size={18} aria-hidden="true" />}</button><div className="min-w-0 flex-1"><p className="text-[11px] font-extrabold text-primary">{session.course || "자유 공부"}</p><p className={`mt-0.5 text-[13.5px] font-bold ${session.done ? "text-muted line-through" : ""}`}>{session.title}</p><p className="mt-0.5 text-[11px] text-muted">{session.date} · {session.time} · {session.durationMin}분</p></div><div className="flex shrink-0"><button type="button" onClick={() => openFocus({ id: session.id, course: session.course, title: session.title, durationMin: session.durationMin })} disabled={session.done} className="grid size-9 place-items-center rounded-full text-primary disabled:opacity-30" aria-label={`${session.title} 타이머 시작`}><Play size={15} aria-hidden="true" /></button><button type="button" onClick={() => setEditing(true)} className="grid size-9 place-items-center rounded-full text-muted" aria-label={`${session.title} 편집`}><Pencil size={15} aria-hidden="true" /></button><button type="button" onClick={remove} className="grid size-9 place-items-center rounded-full text-now" aria-label={`${session.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button></div></div>
+      <div className="flex items-center gap-3"><button type="button" onClick={() => start(async () => { const result = await toggleStudySession(session.id); if (!result.ok) setError(result.error); })} className={`grid size-10 shrink-0 place-items-center rounded-xl bg-surface-soft ${session.done ? "text-done" : "text-primary"}`} aria-label={`${session.title} ${session.done ? "미완료" : "완료"} 처리`}>{session.done ? <Check size={18} aria-hidden="true" /> : <BookOpen size={18} aria-hidden="true" />}</button><div className="min-w-0 flex-1"><p className="flex items-center gap-1.5 text-[11px] font-extrabold text-primary">{session.course || "자유 공부"}{session.ai && <span className="inline-flex items-center gap-0.5 rounded-full bg-surface-soft px-1.5 py-0.5 text-[9.5px] font-extrabold text-now"><Sparkles size={9} aria-hidden="true" />AI</span>}</p><p className={`mt-0.5 text-[13.5px] font-bold ${session.done ? "text-muted line-through" : ""}`}>{session.title}</p><p className="mt-0.5 text-[11px] text-muted">{session.date} · {session.time} · {session.durationMin}분</p></div><div className="flex shrink-0"><button type="button" onClick={() => openFocus({ id: session.id, course: session.course, title: session.title, durationMin: session.durationMin })} disabled={session.done} className="grid size-9 place-items-center rounded-full text-primary disabled:opacity-30" aria-label={`${session.title} 타이머 시작`}><Play size={15} aria-hidden="true" /></button><button type="button" onClick={() => setEditing(true)} className="grid size-9 place-items-center rounded-full text-muted" aria-label={`${session.title} 편집`}><Pencil size={15} aria-hidden="true" /></button><button type="button" onClick={remove} className="grid size-9 place-items-center rounded-full text-now" aria-label={`${session.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button></div></div>
       {error && <p role="alert" className="mt-2 text-xs font-bold text-now">{error}</p>}
     </div>
   );
@@ -66,12 +72,31 @@ function SessionRow({ session, data, index }: { session: Session; data: StudyDat
 
 export function StudyView({ data }: { data: StudyData }) {
   const [adding, setAdding] = useState(false);
+  const [genPending, startGen] = useTransition();
+  const [genError, setGenError] = useState("");
+  const { showToast } = useUi();
+  const generate = () =>
+    startGen(async () => {
+      const result = await generateAiStudyPlan();
+      if (result.ok) showToast(result.created ? `AI가 세션 ${result.created}개를 짜줬어요` : "이번 주엔 급한 마감이 없어요");
+      else setGenError(result.error);
+    });
   return (
     <div>
       <StickerCard rotate={-1.1} tape="STUDY LOG">
         <h1 className="font-display text-[22px] font-semibold text-primary-strong">공부 계획</h1>
         <p className="mb-3.5 mt-1.5 text-[12.5px] text-muted">오늘 {data.plannedCount}세션 · {data.plannedMinutes}분 · 완료 {data.sessionsDone}/{data.plannedCount}</p>
         <div className="flex gap-2"><div className="flex-1 rounded-[14px] border-2 border-border bg-surface-soft px-3 py-2.5"><p className="text-[11px] font-extrabold text-primary-strong">이번 주</p><p className="mt-0.5 font-display text-[18px] font-semibold tabular-nums">{data.weekTotalHours}</p></div><div className="flex-1 rounded-[14px] border-2 border-done bg-surface-soft px-3 py-2.5"><p className="text-[11px] font-extrabold text-done">완료 세션</p><p className="mt-0.5 font-display text-[18px] font-semibold tabular-nums">{data.sessionsDone}개</p></div></div>
+        <button
+          type="button"
+          onClick={generate}
+          disabled={genPending}
+          className="mt-3 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-surface font-display text-[13px] font-semibold text-primary disabled:opacity-50"
+        >
+          <Sparkles size={15} aria-hidden="true" />
+          {genPending ? "계획 짜는 중..." : "AI로 이번 주 계획 짜기"}
+        </button>
+        {genError && <p role="alert" className="mt-2 text-xs font-bold text-now">{genError}</p>}
       </StickerCard>
 
       <SectionTitle count={`${data.sessions.length}개`}>공부 세션</SectionTitle>
