@@ -149,61 +149,81 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-type TimetableInput = {
-  courseId: string | null;
-  title: string;
-  weekday: number;
-  startTime: string;
-  endTime: string;
-  location: string | null;
-};
+type ScheduleSlotInput = { weekday: number; startTime: string; endTime: string; location: string | null };
 
-function validateTimetable(input: TimetableInput): string | null {
-  if (!clean(input.title)) return "수업 이름을 입력하세요.";
-  const validTime = (value: string) => /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
-  if (!validTime(input.startTime) || !validTime(input.endTime)) return "시간 형식이 올바르지 않습니다.";
-  if (input.endTime <= input.startTime) return "종료 시간이 시작 시간보다 빨라요.";
-  if (input.weekday < 1 || input.weekday > 7) return "요일이 올바르지 않습니다.";
+const COURSE_PALETTE = ["#ff7fb2", "#5fd0a8", "#b79bec", "#ffb86b", "#7fb2ff", "#f2a6c9"];
+const VALID_TIME = /^(?:[01]\d|2[0-3]):(?:00|15|30|45)$/;
+
+function validateSlot(slot: ScheduleSlotInput): string | null {
+  if (!VALID_TIME.test(slot.startTime) || !VALID_TIME.test(slot.endTime)) return "시간 형식이 올바르지 않습니다.";
+  if (slot.endTime <= slot.startTime) return "종료 시간이 시작 시간보다 빨라요.";
+  if (slot.weekday < 1 || slot.weekday > 7) return "요일이 올바르지 않습니다.";
   return null;
 }
 
-export async function createTimetableEvent(input: TimetableInput): Promise<ActionResult> {
+/**
+ * 수업 이름 + 여러 요일/시간 일정을 한 번에 저장한다. courseId가 있으면 그 과목의
+ * 이름을 갱신하고, 없으면 새 과목을 만든다(시간표 화면에서는 과목을 직접 고르지
+ * 않고 이름만 입력하므로). removeEventIds에 담긴 기존 일정은 지우고 slots로 새로
+ * 채워 넣는 전체 교체 방식이라, 수정 화면에서 행을 지우고 저장하면 그대로 반영된다.
+ */
+export async function saveClassSchedule(input: {
+  courseId: string | null;
+  removeEventIds: string[];
+  name: string;
+  slots: ScheduleSlotInput[];
+}): Promise<ActionResult<{ courseId: string }>> {
   const user = await getCurrentUser();
-  const error = validateTimetable(input);
-  if (error) return { ok: false, error };
-  if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
-  await prisma.timetableEvent.create({
-    data: { ...input, title: input.title.trim(), location: clean(input.location), userId: user.id },
+  const name = clean(input.name);
+  if (!name) return { ok: false, error: "수업 이름을 입력하세요." };
+  if (!input.slots.length) return { ok: false, error: "시간을 1개 이상 추가하세요." };
+  for (const slot of input.slots) {
+    const error = validateSlot(slot);
+    if (error) return { ok: false, error };
+  }
+
+  let courseId = input.courseId;
+  if (courseId) {
+    const updated = await prisma.course.updateMany({ where: { id: courseId, userId: user.id }, data: { name } });
+    if (!updated.count) return { ok: false, error: "과목을 찾을 수 없어요." };
+  } else {
+    const courseCount = await prisma.course.count({ where: { userId: user.id } });
+    const course = await prisma.course.create({
+      data: { userId: user.id, name, color: COURSE_PALETTE[courseCount % COURSE_PALETTE.length] },
+    });
+    courseId = course.id;
+  }
+
+  if (input.removeEventIds.length) {
+    await prisma.timetableEvent.deleteMany({ where: { id: { in: input.removeEventIds }, userId: user.id } });
+  }
+  await prisma.timetableEvent.createMany({
+    data: input.slots.map((slot) => ({
+      userId: user.id,
+      courseId,
+      title: name,
+      weekday: slot.weekday,
+      startTime: slot.startTime,
+      endTime: slot.endTime,
+      location: clean(slot.location),
+    })),
   });
   revalidateApp();
-  return { ok: true };
+  return { ok: true, courseId };
 }
 
-export async function updateTimetableEvent(input: TimetableInput & { id: string }): Promise<ActionResult> {
+/**
+ * 일정 그룹을 통째로 삭제한다. Course → TimetableEvent 관계는 onDelete: SetNull이라
+ * 과목만 지우면 일정이 "과목 없음"으로 남는다. 그래서 항상 eventIds로 일정을 직접
+ * 지우고, 과목이 연결돼 있었다면 이제 일정이 없어진 그 과목도 함께 정리한다.
+ */
+export async function deleteClassGroup(input: { courseId: string | null; eventIds: string[] }): Promise<ActionResult> {
   const user = await getCurrentUser();
-  const error = validateTimetable(input);
-  if (error) return { ok: false, error };
-  if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
-  const updated = await prisma.timetableEvent.updateMany({
-    where: { id: input.id, userId: user.id },
-    data: {
-      courseId: input.courseId,
-      title: input.title.trim(),
-      weekday: input.weekday,
-      startTime: input.startTime,
-      endTime: input.endTime,
-      location: clean(input.location),
-    },
-  });
-  if (!updated.count) return { ok: false, error: "수업을 찾을 수 없어요." };
-  revalidateApp();
-  return { ok: true };
-}
-
-export async function deleteTimetableEvent(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  const deleted = await prisma.timetableEvent.deleteMany({ where: { id, userId: user.id } });
-  if (!deleted.count) return { ok: false, error: "수업을 찾을 수 없어요." };
+  if (!input.eventIds.length) return { ok: false, error: "삭제할 일정이 없어요." };
+  await prisma.timetableEvent.deleteMany({ where: { id: { in: input.eventIds }, userId: user.id } });
+  if (input.courseId) {
+    await prisma.course.deleteMany({ where: { id: input.courseId, userId: user.id } });
+  }
   revalidateApp();
   return { ok: true };
 }
