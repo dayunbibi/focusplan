@@ -15,6 +15,7 @@ import {
 import { StickerCard } from "@/components/kitty/sticker-card";
 import { SectionTitle } from "./section-title";
 import { CourseManager } from "./course-manager";
+import { TimezoneSelect } from "./timezone-select";
 import { updateProfile } from "../_lib/actions";
 import type { getSettings } from "../_lib/queries";
 
@@ -150,7 +151,7 @@ export function SettingsView({ data }: { data: SettingsData }) {
       <div className="rounded-[18px] border-2 border-border bg-surface p-4">
         <div className="flex flex-col gap-2.5">
           <label className="text-[11.5px] font-extrabold text-muted">이름<input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary" /></label>
-          <label className="text-[11.5px] font-extrabold text-muted">시간대<input value={timezone} onChange={(event) => setTimezone(event.target.value)} placeholder="Asia/Seoul" className="mt-1 min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary" /></label>
+          <label className="text-[11.5px] font-extrabold text-muted">시간대<TimezoneSelect value={timezone} onChange={setTimezone} /></label>
           {profileMessage && <p aria-live="polite" className={`text-xs font-bold ${profileMessage.includes("저장") ? "text-done" : "text-now"}`}>{profileMessage}</p>}
           <button type="button" onClick={saveProfile} disabled={profilePending || !name.trim() || !timezone.trim()} className="flex min-h-11 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary text-sm font-bold text-white disabled:opacity-50"><Save size={15} aria-hidden="true" />프로필 저장</button>
         </div>
