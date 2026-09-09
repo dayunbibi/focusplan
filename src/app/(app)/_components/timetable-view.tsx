@@ -12,6 +12,71 @@ type Row = TimetableData["rows"][number];
 const weekdays = ["월", "화", "수", "목", "금"];
 const hours = Array.from({ length: 14 }, (_, index) => index + 8);
 
+/** 시간축 1시간 = HOUR_HEIGHT px. 모바일/데스크톱 모두 같은 값을 써서 비율이 항상 동일하다. */
+const HOUR_HEIGHT = 60;
+const PIXELS_PER_MINUTE = HOUR_HEIGHT / 60;
+const GRID_START_MIN = hours[0] * 60;
+const GRID_END_MIN = GRID_START_MIN + hours.length * 60;
+
+function timeToMinutes(hhmm: string) {
+  const [h, m] = hhmm.split(":").map(Number);
+  return h * 60 + m;
+}
+
+/** startTime~endTime을 그리드 기준 top/height(px)로 변환. 그리드 범위 밖은 잘라낸다. */
+function blockGeometry(startTime: string, endTime: string) {
+  const start = Math.min(Math.max(timeToMinutes(startTime), GRID_START_MIN), GRID_END_MIN);
+  const end = Math.min(Math.max(timeToMinutes(endTime), GRID_START_MIN), GRID_END_MIN);
+  return {
+    top: (start - GRID_START_MIN) * PIXELS_PER_MINUTE,
+    height: Math.max((end - start) * PIXELS_PER_MINUTE, 0),
+  };
+}
+
+type LaidOutEvent = { event: Row; col: number; totalCols: number };
+
+/**
+ * 같은 요일 안에서 시간이 겹치는 수업들(실제로 몇 분씩 겹치는 실데이터가 있다)을
+ * 나란히 배치하기 위해 컬럼을 배정한다. 표준 캘린더 겹침-컬럼 알고리즘: 시작 시간
+ * 순으로 훑으며 끝난 컬럼에 재사용하고, 겹치는 클러스터 단위로 폭을 나눈다.
+ */
+function layoutDayColumn(events: Row[]): LaidOutEvent[] {
+  const sorted = [...events].sort(
+    (a, b) => timeToMinutes(a.startTime) - timeToMinutes(b.startTime) || timeToMinutes(a.endTime) - timeToMinutes(b.endTime),
+  );
+  const clusters: Row[][] = [];
+  let current: Row[] = [];
+  let clusterEnd = -Infinity;
+  for (const event of sorted) {
+    if (current.length && timeToMinutes(event.startTime) >= clusterEnd) {
+      clusters.push(current);
+      current = [];
+      clusterEnd = -Infinity;
+    }
+    current.push(event);
+    clusterEnd = Math.max(clusterEnd, timeToMinutes(event.endTime));
+  }
+  if (current.length) clusters.push(current);
+
+  const result: LaidOutEvent[] = [];
+  for (const cluster of clusters) {
+    const columnEnds: number[] = [];
+    const colByEvent = new Map<Row, number>();
+    for (const event of cluster) {
+      const start = timeToMinutes(event.startTime);
+      let col = columnEnds.findIndex((end) => end <= start);
+      if (col === -1) {
+        col = columnEnds.length;
+        columnEnds.push(0);
+      }
+      columnEnds[col] = timeToMinutes(event.endTime);
+      colByEvent.set(event, col);
+    }
+    for (const event of cluster) result.push({ event, col: colByEvent.get(event)!, totalCols: columnEnds.length });
+  }
+  return result;
+}
+
 /** 과목이 연결된 일정은 courseId로, 아직 과목 없이 이름만 있는 일정은 이름으로 묶는다. */
 function groupClasses(rows: Row[]): ClassGroup[] {
   const groups = new Map<string, ClassGroup>();
@@ -74,30 +139,61 @@ export function TimetableView({ data }: { data: TimetableData }) {
           {weekdays.map((day, index) => <span key={day} className={`rounded-full py-1 text-center font-display text-xs font-semibold ${data.todayWeekday === index + 1 ? "bg-primary text-white" : "text-muted"}`}>{day}</span>)}
         </div>
         <div className="max-h-[430px] overflow-y-auto">
-          {hours.map((hour) => (
-            <div key={hour} className="grid min-h-[58px] grid-cols-[30px_repeat(5,minmax(48px,1fr))] gap-0.5">
-              <span className="pt-1 text-[10.5px] font-bold tabular-nums text-muted">{String(hour).padStart(2, "0")}</span>
-              {weekdays.map((day, column) => {
-                const events = data.rows.filter((event) => event.weekday === column + 1 && Number(event.startTime.slice(0, 2)) === hour);
-                return (
-                  <div key={day} className="min-w-0 border-t-2 border-dashed border-border p-0.5">
-                    {events.map((event) => (
+          <div className="grid grid-cols-[30px_repeat(5,minmax(48px,1fr))] gap-0.5">
+            <div className="relative" style={{ height: hours.length * HOUR_HEIGHT }}>
+              {hours.map((hour, i) => (
+                <span
+                  key={hour}
+                  style={{ top: i * HOUR_HEIGHT }}
+                  className="absolute inset-x-0 -translate-y-1/2 text-[10.5px] font-bold tabular-nums text-muted"
+                >
+                  {String(hour).padStart(2, "0")}
+                </span>
+              ))}
+            </div>
+            {weekdays.map((day, column) => {
+              const laidOut = layoutDayColumn(data.rows.filter((event) => event.weekday === column + 1));
+              return (
+                <div key={day} className="relative min-w-0" style={{ height: hours.length * HOUR_HEIGHT }}>
+                  {hours.map((hour, i) => (
+                    <div
+                      key={hour}
+                      style={{ top: i * HOUR_HEIGHT, height: HOUR_HEIGHT }}
+                      className="absolute inset-x-0 border-t-2 border-dashed border-border"
+                    />
+                  ))}
+                  {laidOut.map(({ event, col, totalCols }) => {
+                    const { top, height } = blockGeometry(event.startTime, event.endTime);
+                    const widthPct = 100 / totalCols;
+                    const lines = height >= 38 ? 3 : height >= 24 ? 2 : 1;
+                    return (
                       <div
                         key={event.id}
-                        style={{ backgroundColor: event.color, color: COURSE_INK }}
-                        className="mb-0.5 rounded-[9px] border border-black/10 px-1 py-1 text-[9.5px] font-extrabold leading-tight"
+                        style={{
+                          top,
+                          height,
+                          left: `${col * widthPct}%`,
+                          width: `${widthPct}%`,
+                          backgroundColor: event.color,
+                          color: COURSE_INK,
+                        }}
+                        className="absolute overflow-hidden rounded-[9px] border border-black/10 px-1 py-0.5 text-[9.5px] font-extrabold leading-tight"
                         title={`${event.title} ${event.startTime}-${event.endTime}`}
                       >
                         <p className="truncate">{event.title}</p>
-                        {event.location && <p className="truncate font-semibold opacity-75">{event.location}</p>}
-                        <p className="truncate font-semibold tabular-nums opacity-60">{event.startTime}–{event.endTime}</p>
+                        {lines >= 3 && event.location && <p className="truncate font-semibold opacity-75">{event.location}</p>}
+                        {lines >= 2 && (
+                          <p className="truncate font-semibold tabular-nums opacity-60">
+                            {event.startTime}–{event.endTime}
+                          </p>
+                        )}
                       </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-          ))}
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
