@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Plus, Save, Trash2, X } from "lucide-react";
 import { TimeSelect } from "./time-select";
+import { ColorSwatchPicker } from "./color-swatch-picker";
 import { saveClassSchedule } from "../_lib/actions";
 
 const WEEKDAYS = [
@@ -14,14 +15,23 @@ const WEEKDAYS = [
 ];
 
 export type ClassSlot = { key: string; weekday: number; startTime: string; endTime: string; location: string };
-export type ClassGroupInitial = { courseId: string | null; name: string; eventIds: string[]; slots: ClassSlot[] };
+export type ClassGroupInitial = { courseId: string | null; name: string; color: string; eventIds: string[]; slots: ClassSlot[] };
 
 function newSlot(overrides?: Partial<ClassSlot>): ClassSlot {
   return { key: crypto.randomUUID(), weekday: 1, startTime: "09:00", endTime: "10:15", location: "", ...overrides };
 }
 
-export function ClassScheduleForm({ initial, onClose }: { initial?: ClassGroupInitial; onClose: () => void }) {
+export function ClassScheduleForm({
+  initial,
+  defaultColor,
+  onClose,
+}: {
+  initial?: ClassGroupInitial;
+  defaultColor: string;
+  onClose: () => void;
+}) {
   const [name, setName] = useState(initial?.name ?? "");
+  const [color, setColor] = useState(initial?.color ?? defaultColor);
   const [rows, setRows] = useState<ClassSlot[]>(initial?.slots.length ? initial.slots : [newSlot()]);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
@@ -41,6 +51,7 @@ export function ClassScheduleForm({ initial, onClose }: { initial?: ClassGroupIn
         courseId: initial?.courseId ?? null,
         removeEventIds: initial?.eventIds ?? [],
         name,
+        color,
         slots: rows.map(({ weekday, startTime, endTime, location }) => ({
           weekday,
           startTime,
@@ -77,6 +88,9 @@ export function ClassScheduleForm({ initial, onClose }: { initial?: ClassGroupIn
           className="mt-1 min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary"
         />
       </label>
+
+      <p className="mb-1.5 mt-4 text-[11.5px] font-extrabold text-muted">색상</p>
+      <ColorSwatchPicker value={color} onChange={setColor} />
 
       <p className="mb-1.5 mt-4 text-[11.5px] font-extrabold text-muted">일정</p>
       {rows.length ? (

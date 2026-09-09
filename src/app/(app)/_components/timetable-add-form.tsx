@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { ClassScheduleForm } from "./class-schedule-form";
 
-export function TimetableAddForm() {
+export function TimetableAddForm({ nextColor }: { nextColor: string }) {
   const [open, setOpen] = useState(false);
 
   if (!open) {
@@ -22,7 +22,7 @@ export function TimetableAddForm() {
 
   return (
     <div className="mt-[22px]">
-      <ClassScheduleForm onClose={() => setOpen(false)} />
+      <ClassScheduleForm defaultColor={nextColor} onClose={() => setOpen(false)} />
     </div>
   );
 }

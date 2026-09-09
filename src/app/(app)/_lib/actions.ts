@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { addDays, dateKey, dday, dueFromChoice, hhmm, isoWeekday, startOfToday, zonedDate } from "./date-utils";
+import { isPastelColor, paletteColorAt } from "./course-colors";
 import { getCurrentUser } from "./queries";
 
 export type ActionResult<T extends object = object> =
@@ -113,7 +114,7 @@ export async function createCourse(input: {
   const user = await getCurrentUser();
   const name = clean(input.name);
   if (!name) return { ok: false, error: "과목 이름을 입력하세요." };
-  const color = input.color && /^#[0-9a-f]{6}$/i.test(input.color) ? input.color : "#ff7fb2";
+  const color = isPastelColor(input.color) ? input.color : paletteColorAt(await prisma.course.count({ where: { userId: user.id } }));
   const course = await prisma.course.create({
     data: { userId: user.id, name, code: clean(input.code), color, location: clean(input.location) },
   });
@@ -131,7 +132,7 @@ export async function updateCourse(input: {
   const user = await getCurrentUser();
   const name = clean(input.name);
   if (!name) return { ok: false, error: "과목 이름을 입력하세요." };
-  if (!/^#[0-9a-f]{6}$/i.test(input.color)) return { ok: false, error: "과목 색상을 확인하세요." };
+  if (!isPastelColor(input.color)) return { ok: false, error: "색상을 다시 선택하세요." };
   const updated = await prisma.course.updateMany({
     where: { id: input.id, userId: user.id },
     data: { name, code: clean(input.code), color: input.color, location: clean(input.location) },
@@ -151,7 +152,6 @@ export async function deleteCourse(id: string): Promise<ActionResult> {
 
 type ScheduleSlotInput = { weekday: number; startTime: string; endTime: string; location: string | null };
 
-const COURSE_PALETTE = ["#ff7fb2", "#5fd0a8", "#b79bec", "#ffb86b", "#7fb2ff", "#f2a6c9"];
 const VALID_TIME = /^(?:[01]\d|2[0-3]):(?:0[05]|[1-5][05])$/;
 
 function validateSlot(slot: ScheduleSlotInput): string | null {
@@ -171,6 +171,7 @@ export async function saveClassSchedule(input: {
   courseId: string | null;
   removeEventIds: string[];
   name: string;
+  color: string | null;
   slots: ScheduleSlotInput[];
 }): Promise<ActionResult<{ courseId: string }>> {
   const user = await getCurrentUser();
@@ -181,15 +182,19 @@ export async function saveClassSchedule(input: {
     const error = validateSlot(slot);
     if (error) return { ok: false, error };
   }
+  if (input.color && !isPastelColor(input.color)) return { ok: false, error: "색상을 다시 선택하세요." };
 
   let courseId = input.courseId;
   if (courseId) {
-    const updated = await prisma.course.updateMany({ where: { id: courseId, userId: user.id }, data: { name } });
+    const updated = await prisma.course.updateMany({
+      where: { id: courseId, userId: user.id },
+      data: { name, ...(input.color ? { color: input.color } : {}) },
+    });
     if (!updated.count) return { ok: false, error: "과목을 찾을 수 없어요." };
   } else {
     const courseCount = await prisma.course.count({ where: { userId: user.id } });
     const course = await prisma.course.create({
-      data: { userId: user.id, name, color: COURSE_PALETTE[courseCount % COURSE_PALETTE.length] },
+      data: { userId: user.id, name, color: input.color ?? paletteColorAt(courseCount) },
     });
     courseId = course.id;
   }

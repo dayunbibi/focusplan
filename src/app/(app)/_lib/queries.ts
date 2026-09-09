@@ -14,6 +14,7 @@ import {
   todayTape,
   zonedDate,
 } from "./date-utils";
+import { fallbackColorFor } from "./course-colors";
 
 export type TaskVM = {
   id: string;
@@ -263,7 +264,7 @@ export async function getTimetable() {
   const [events, courseCount] = await Promise.all([
     prisma.timetableEvent.findMany({
       where: { userId: user.id },
-      include: { course: { select: { name: true, location: true } } },
+      include: { course: { select: { name: true, location: true, color: true } } },
       orderBy: [{ weekday: "asc" }, { startTime: "asc" }],
     }),
     prisma.course.count({ where: { userId: user.id } }),
@@ -275,6 +276,7 @@ export async function getTimetable() {
     courseId: e.courseId,
     rawTitle: e.title,
     title: e.course?.name ?? e.title,
+    color: e.course?.color ?? fallbackColorFor(e.title),
     weekday: e.weekday,
     startTime: e.startTime,
     endTime: e.endTime,

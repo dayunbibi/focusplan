@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import type { CourseVM } from "../_lib/queries";
 import { createCourse, deleteCourse, updateCourse } from "../_lib/actions";
+import { ColorSwatchPicker } from "./color-swatch-picker";
+import { COURSE_PALETTE } from "../_lib/course-colors";
 
 const fieldClass = "min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary";
 
@@ -11,7 +13,7 @@ function CourseForm({ item, onClose }: { item?: CourseVM; onClose: () => void })
   const [name, setName] = useState(item?.name ?? "");
   const [code, setCode] = useState(item?.code ?? "");
   const [location, setLocation] = useState(item?.location ?? "");
-  const [color, setColor] = useState(item?.color ?? "#ff7fb2");
+  const [color, setColor] = useState(item?.color ?? COURSE_PALETTE[0].hex);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const save = () => start(async () => {
@@ -26,7 +28,8 @@ function CourseForm({ item, onClose }: { item?: CourseVM; onClose: () => void })
       <div className="flex flex-col gap-2.5">
         <label className="text-[11.5px] font-extrabold text-muted">과목명<input value={name} onChange={(e) => setName(e.target.value)} className={`${fieldClass} mt-1`} autoFocus /></label>
         <div className="grid grid-cols-2 gap-2"><label className="text-[11.5px] font-extrabold text-muted">과목 코드<input value={code} onChange={(e) => setCode(e.target.value)} className={`${fieldClass} mt-1`} /></label><label className="text-[11.5px] font-extrabold text-muted">기본 강의실<input value={location} onChange={(e) => setLocation(e.target.value)} className={`${fieldClass} mt-1`} /></label></div>
-        <label className="flex items-center justify-between text-[11.5px] font-extrabold text-muted">과목 색상<input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-11 w-20 rounded-[12px] border-2 border-border bg-surface p-1" /></label>
+        <p className="text-[11.5px] font-extrabold text-muted">과목 색상</p>
+        <ColorSwatchPicker value={color} onChange={setColor} />
         {error && <p role="alert" className="text-xs font-bold text-now">{error}</p>}
         <button type="button" onClick={save} disabled={pending || !name.trim()} className="flex min-h-11 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary text-sm font-bold text-white disabled:opacity-50"><Save size={15} aria-hidden="true" />저장</button>
       </div>

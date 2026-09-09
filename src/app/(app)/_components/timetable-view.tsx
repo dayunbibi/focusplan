@@ -5,12 +5,12 @@ import type { getTimetable } from "../_lib/queries";
 import { SectionTitle } from "./section-title";
 import { TimetableAddForm } from "./timetable-add-form";
 import { ClassCard, type ClassGroup } from "./class-card";
+import { COURSE_INK, COURSE_INK_MUTED, paletteColorAt } from "../_lib/course-colors";
 
 type TimetableData = Awaited<ReturnType<typeof getTimetable>>;
 type Row = TimetableData["rows"][number];
 const weekdays = ["월", "화", "수", "목", "금"];
 const hours = Array.from({ length: 14 }, (_, index) => index + 8);
-const tones = ["border-primary bg-surface-soft text-primary", "border-done bg-surface-soft text-done", "border-now bg-surface-soft text-now"];
 
 /** 과목이 연결된 일정은 courseId로, 아직 과목 없이 이름만 있는 일정은 이름으로 묶는다. */
 function groupClasses(rows: Row[]): ClassGroup[] {
@@ -23,7 +23,7 @@ function groupClasses(rows: Row[]): ClassGroup[] {
       existing.slots.push(slot);
       existing.eventIds.push(row.id);
     } else {
-      groups.set(key, { key, courseId: row.courseId, name: row.title, eventIds: [row.id], slots: [slot] });
+      groups.set(key, { key, courseId: row.courseId, name: row.title, color: row.color, eventIds: [row.id], slots: [slot] });
     }
   }
   return [...groups.values()]
@@ -36,23 +36,23 @@ function groupClasses(rows: Row[]): ClassGroup[] {
 
 function TodayClassRow({ event, index }: { event: Row; index: number }) {
   return (
-    <div style={{ transform: `rotate(${index % 2 ? 0.5 : -0.4}deg)` }} className="rounded-[18px] border-2 border-border bg-surface p-3.5">
-      <div className="flex items-center gap-3">
-        <span className="size-3 shrink-0 rounded-full bg-primary" />
-        <div className="min-w-0 flex-1">
-          <p className="text-[13.5px] font-bold">{event.title}</p>
-          <p className="mt-0.5 flex flex-wrap items-center gap-1 text-[11.5px] text-muted">
-            <span className="tabular-nums">
-              {event.startTime}–{event.endTime}
+    <div
+      style={{ transform: `rotate(${index % 2 ? 0.5 : -0.4}deg)`, backgroundColor: event.color, color: COURSE_INK }}
+      className="rounded-[18px] border border-black/10 p-3.5"
+    >
+      <div className="min-w-0">
+        <p className="text-[13.5px] font-bold">{event.title}</p>
+        <p style={{ color: COURSE_INK_MUTED }} className="mt-0.5 flex flex-wrap items-center gap-1 text-[11.5px]">
+          <span className="tabular-nums">
+            {event.startTime}–{event.endTime}
+          </span>
+          {event.location && (
+            <span className="flex items-center gap-1">
+              <MapPin size={12} aria-hidden="true" />
+              {event.location}
             </span>
-            {event.location && (
-              <span className="flex items-center gap-1">
-                <MapPin size={12} aria-hidden="true" />
-                {event.location}
-              </span>
-            )}
-          </p>
-        </div>
+          )}
+        </p>
       </div>
     </div>
   );
@@ -81,15 +81,16 @@ export function TimetableView({ data }: { data: TimetableData }) {
                 const events = data.rows.filter((event) => event.weekday === column + 1 && Number(event.startTime.slice(0, 2)) === hour);
                 return (
                   <div key={day} className="min-w-0 border-t-2 border-dashed border-border p-0.5">
-                    {events.map((event, index) => (
+                    {events.map((event) => (
                       <div
                         key={event.id}
-                        className={`mb-0.5 rounded-[9px] border px-1 py-1 text-[9.5px] font-extrabold leading-tight ${tones[index % tones.length]}`}
+                        style={{ backgroundColor: event.color, color: COURSE_INK }}
+                        className="mb-0.5 rounded-[9px] border border-black/10 px-1 py-1 text-[9.5px] font-extrabold leading-tight"
                         title={`${event.title} ${event.startTime}-${event.endTime}`}
                       >
                         <p className="truncate">{event.title}</p>
-                        {event.location && <p className="truncate font-semibold opacity-80">{event.location}</p>}
-                        <p className="truncate font-semibold tabular-nums opacity-70">{event.startTime}–{event.endTime}</p>
+                        {event.location && <p className="truncate font-semibold opacity-75">{event.location}</p>}
+                        <p className="truncate font-semibold tabular-nums opacity-60">{event.startTime}–{event.endTime}</p>
                       </div>
                     ))}
                   </div>
@@ -100,7 +101,7 @@ export function TimetableView({ data }: { data: TimetableData }) {
         </div>
       </div>
 
-      <TimetableAddForm />
+      <TimetableAddForm nextColor={paletteColorAt(data.courseCount)} />
 
       <SectionTitle count={`${data.todayRows.length}개`}>오늘 수업</SectionTitle>
       {data.todayRows.length ? (
