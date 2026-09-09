@@ -2,9 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireCurrentUser } from "@/lib/dal/auth";
+import {
+  courseBelongsToUser,
+  getOwnedAssignmentCompletion,
+  getOwnedStudySessionCompletion,
+  getOwnedTaskCompletion,
+} from "@/lib/dal/authorization";
 import { addDays, dateKey, dday, dueFromChoice, hhmm, isoWeekday, startOfToday, zonedDate } from "./date-utils";
 import { isPastelColor, paletteColorAt } from "./course-colors";
-import { getCurrentUser } from "./queries";
 
 export type ActionResult<T extends object = object> =
   | ({ ok: true } & T)
@@ -31,16 +37,11 @@ function parseDate(value: string, label: string): ActionResult<{ date: Date }> {
     : { ok: true, date };
 }
 
-async function courseBelongsToUser(userId: string, courseId: string | null) {
-  if (!courseId) return true;
-  return (await prisma.course.count({ where: { id: courseId, userId } })) === 1;
-}
-
 export async function toggleTask(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  const task = await prisma.task.findFirst({ where: { id, userId: user.id }, select: { completedAt: true } });
+  const user = await requireCurrentUser();
+  const task = await getOwnedTaskCompletion(user.id, id);
   if (!task) return { ok: false, error: "할 일을 찾을 수 없어요." };
-  await prisma.task.update({ where: { id }, data: { completedAt: task.completedAt ? null : new Date() } });
+  await prisma.task.updateMany({ where: { id, userId: user.id }, data: { completedAt: task.completedAt ? null : new Date() } });
   revalidateApp();
   return { ok: true };
 }
@@ -51,7 +52,7 @@ export async function createTask(input: {
   priority: PriorityValue;
   due: "오늘" | "내일" | "이번 주";
 }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "제목을 입력하세요." };
   if (!isPriority(input.priority)) return { ok: false, error: "우선순위를 확인하세요." };
@@ -77,7 +78,7 @@ export async function updateTask(input: {
   priority: PriorityValue;
   dueAt: string | null;
 }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "제목을 입력하세요." };
   if (!isPriority(input.priority)) return { ok: false, error: "우선순위를 확인하세요." };
@@ -98,7 +99,7 @@ export async function updateTask(input: {
 }
 
 export async function deleteTask(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const deleted = await prisma.task.deleteMany({ where: { id, userId: user.id } });
   if (!deleted.count) return { ok: false, error: "할 일을 찾을 수 없어요." };
   revalidateApp();
@@ -111,7 +112,7 @@ export async function createCourse(input: {
   color?: string | null;
   location: string | null;
 }): Promise<ActionResult<{ id: string }>> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const name = clean(input.name);
   if (!name) return { ok: false, error: "과목 이름을 입력하세요." };
   const color = isPastelColor(input.color) ? input.color : paletteColorAt(await prisma.course.count({ where: { userId: user.id } }));
@@ -129,7 +130,7 @@ export async function updateCourse(input: {
   color: string;
   location: string | null;
 }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const name = clean(input.name);
   if (!name) return { ok: false, error: "과목 이름을 입력하세요." };
   if (!isPastelColor(input.color)) return { ok: false, error: "색상을 다시 선택하세요." };
@@ -143,7 +144,7 @@ export async function updateCourse(input: {
 }
 
 export async function deleteCourse(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const deleted = await prisma.course.deleteMany({ where: { id, userId: user.id } });
   if (!deleted.count) return { ok: false, error: "과목을 찾을 수 없어요." };
   revalidateApp();
@@ -174,7 +175,7 @@ export async function saveClassSchedule(input: {
   color: string | null;
   slots: ScheduleSlotInput[];
 }): Promise<ActionResult<{ courseId: string }>> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const name = clean(input.name);
   if (!name) return { ok: false, error: "수업 이름을 입력하세요." };
   if (!input.slots.length) return { ok: false, error: "시간을 1개 이상 추가하세요." };
@@ -223,7 +224,7 @@ export async function saveClassSchedule(input: {
  * 지우고, 과목이 연결돼 있었다면 이제 일정이 없어진 그 과목도 함께 정리한다.
  */
 export async function deleteClassGroup(input: { courseId: string | null; eventIds: string[] }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   if (!input.eventIds.length) return { ok: false, error: "삭제할 일정이 없어요." };
   await prisma.timetableEvent.deleteMany({ where: { id: { in: input.eventIds }, userId: user.id } });
   if (input.courseId) {
@@ -236,7 +237,7 @@ export async function deleteClassGroup(input: { courseId: string | null; eventId
 type AssignmentInput = { title: string; description: string | null; courseId: string | null; dueAt: string };
 
 export async function createAssignment(input: AssignmentInput): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "과제 제목을 입력하세요." };
   if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
@@ -250,7 +251,7 @@ export async function createAssignment(input: AssignmentInput): Promise<ActionRe
 }
 
 export async function updateAssignment(input: AssignmentInput & { id: string }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "과제 제목을 입력하세요." };
   if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
@@ -266,16 +267,16 @@ export async function updateAssignment(input: AssignmentInput & { id: string }):
 }
 
 export async function toggleAssignment(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  const item = await prisma.assignment.findFirst({ where: { id, userId: user.id }, select: { completedAt: true } });
+  const user = await requireCurrentUser();
+  const item = await getOwnedAssignmentCompletion(user.id, id);
   if (!item) return { ok: false, error: "과제를 찾을 수 없어요." };
-  await prisma.assignment.update({ where: { id }, data: { completedAt: item.completedAt ? null : new Date() } });
+  await prisma.assignment.updateMany({ where: { id, userId: user.id }, data: { completedAt: item.completedAt ? null : new Date() } });
   revalidateApp();
   return { ok: true };
 }
 
 export async function deleteAssignment(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const deleted = await prisma.assignment.deleteMany({ where: { id, userId: user.id } });
   if (!deleted.count) return { ok: false, error: "과제를 찾을 수 없어요." };
   revalidateApp();
@@ -285,7 +286,7 @@ export async function deleteAssignment(id: string): Promise<ActionResult> {
 type ExamInput = { title: string; notes: string | null; location: string | null; courseId: string | null; examAt: string };
 
 export async function createExam(input: ExamInput): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "시험 제목을 입력하세요." };
   if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
@@ -299,7 +300,7 @@ export async function createExam(input: ExamInput): Promise<ActionResult> {
 }
 
 export async function updateExam(input: ExamInput & { id: string }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "시험 제목을 입력하세요." };
   if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
@@ -315,7 +316,7 @@ export async function updateExam(input: ExamInput & { id: string }): Promise<Act
 }
 
 export async function deleteExam(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const deleted = await prisma.exam.deleteMany({ where: { id, userId: user.id } });
   if (!deleted.count) return { ok: false, error: "시험을 찾을 수 없어요." };
   revalidateApp();
@@ -325,7 +326,7 @@ export async function deleteExam(id: string): Promise<ActionResult> {
 type StudyInput = { title: string; courseId: string | null; plannedAt: string; durationMin: number };
 
 export async function createStudySession(input: StudyInput): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "공부 주제를 입력하세요." };
   if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
@@ -340,7 +341,7 @@ export async function createStudySession(input: StudyInput): Promise<ActionResul
 }
 
 export async function updateStudySession(input: StudyInput & { id: string }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const title = clean(input.title);
   if (!title) return { ok: false, error: "공부 주제를 입력하세요." };
   if (!(await courseBelongsToUser(user.id, input.courseId))) return { ok: false, error: "과목을 찾을 수 없어요." };
@@ -357,7 +358,7 @@ export async function updateStudySession(input: StudyInput & { id: string }): Pr
 }
 
 export async function completeStudySession(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const updated = await prisma.studySession.updateMany({ where: { id, userId: user.id }, data: { completedAt: new Date() } });
   if (!updated.count) return { ok: false, error: "공부 세션을 찾을 수 없어요." };
   revalidateApp();
@@ -365,16 +366,16 @@ export async function completeStudySession(id: string): Promise<ActionResult> {
 }
 
 export async function toggleStudySession(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  const item = await prisma.studySession.findFirst({ where: { id, userId: user.id }, select: { completedAt: true } });
+  const user = await requireCurrentUser();
+  const item = await getOwnedStudySessionCompletion(user.id, id);
   if (!item) return { ok: false, error: "공부 세션을 찾을 수 없어요." };
-  await prisma.studySession.update({ where: { id }, data: { completedAt: item.completedAt ? null : new Date() } });
+  await prisma.studySession.updateMany({ where: { id, userId: user.id }, data: { completedAt: item.completedAt ? null : new Date() } });
   revalidateApp();
   return { ok: true };
 }
 
 export async function deleteStudySession(id: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const deleted = await prisma.studySession.deleteMany({ where: { id, userId: user.id } });
   if (!deleted.count) return { ok: false, error: "공부 세션을 찾을 수 없어요." };
   revalidateApp();
@@ -399,7 +400,7 @@ function timeToMin(value: string) {
  * 배분(우선순위, 공부량 추정)이 필요해지면 슬롯 탐색 로직을 교체한다.
  */
 export async function generateAiStudyPlan(): Promise<ActionResult<{ created: number }>> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const tz = user.timezone;
   const today = startOfToday(tz);
   const horizonEnd = addDays(today, AI_PLAN_HORIZON_DAYS);
@@ -479,7 +480,7 @@ export async function generateAiStudyPlan(): Promise<ActionResult<{ created: num
 }
 
 export async function updateProfile(input: { name: string; timezone: string }): Promise<ActionResult> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const name = clean(input.name);
   const timezone = clean(input.timezone);
   if (!name || !timezone) return { ok: false, error: "이름과 시간대를 입력하세요." };

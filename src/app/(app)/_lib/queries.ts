@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { requireCurrentUser } from "@/lib/dal/auth";
 import {
   addDays,
   dateKey,
@@ -39,14 +40,8 @@ export type CourseVM = {
 
 const PRIORITY_KO: Record<string, "높음" | "보통" | null> = { HIGH: "높음", MEDIUM: "보통", LOW: null };
 
-export async function getCurrentUser() {
-  const user = await prisma.user.findFirst({ orderBy: { createdAt: "asc" } });
-  if (!user) throw new Error("시드 유저가 없습니다. `npm run db:seed` 를 실행하세요.");
-  return user;
-}
-
 export async function getCourses() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   return prisma.course.findMany({ where: { userId: user.id }, orderBy: { name: "asc" } });
 }
 
@@ -75,7 +70,7 @@ function toTaskVM(t: {
 }
 
 export async function getTasks(): Promise<TaskVM[]> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const tasks = await prisma.task.findMany({
     where: { userId: user.id },
     include: { course: { select: { name: true } } },
@@ -85,7 +80,7 @@ export async function getTasks(): Promise<TaskVM[]> {
 }
 
 export async function getTodayTasks(): Promise<TaskVM[]> {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const tasks = await prisma.task.findMany({
     where: {
       userId: user.id,
@@ -102,7 +97,7 @@ export async function getTodayTasks(): Promise<TaskVM[]> {
 }
 
 export async function getTodayClasses() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const weekday = isoWeekday(new Date(), user.timezone);
   const events = await prisma.timetableEvent.findMany({
     where: { userId: user.id, weekday },
@@ -127,7 +122,7 @@ export async function getTodayClasses() {
 }
 
 export async function getTodaySessions() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const sessions = await prisma.studySession.findMany({
     where: {
       userId: user.id,
@@ -149,7 +144,7 @@ export async function getTodaySessions() {
 }
 
 export async function getUpcoming() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const from = startOfToday(user.timezone);
   const [assignments, exams] = await Promise.all([
     prisma.assignment.findMany({
@@ -207,12 +202,12 @@ export async function getDashboard() {
     focus: sessions.find((s) => !s.done) ?? null,
     progress: { done, total, pct, tasksDone },
     cheer,
-    tape: todayTape((await getCurrentUser()).timezone),
+    tape: todayTape((await requireCurrentUser()).timezone),
   };
 }
 
 export async function getTasksScreen() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const [tasks, courses, upcoming, assignmentRows, examRows] = await Promise.all([
     getTasks(),
     getCourses(),
@@ -260,7 +255,7 @@ export async function getTasksScreen() {
 const WEEKDAY_LABELS = ["월", "화", "수", "목", "금"];
 
 export async function getTimetable() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const [events, courseCount] = await Promise.all([
     prisma.timetableEvent.findMany({
       where: { userId: user.id },
@@ -300,7 +295,7 @@ export async function getTimetable() {
 }
 
 export async function getStudyPlan() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const todaySessions = await getTodaySessions();
   const weekStart = startOfWeek(user.timezone);
   const weekEnd = addDays(weekStart, 7);
@@ -370,7 +365,7 @@ export type CalendarDay = { day: number; events: CalendarEventVM[]; mark: "prima
 export type CalendarEventVM = { time: string; title: string; meta: string; tone: "primary" | "now" | "done" | "muted" };
 
 export async function getCalendarMonth(year: number, month1: number) {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const monthStart = zonedDate(year, month1, 1, 0, 0, user.timezone);
   const nextMonth = new Date(Date.UTC(year, month1, 1));
   const monthEnd = zonedDate(nextMonth.getUTCFullYear(), nextMonth.getUTCMonth() + 1, 1, 0, 0, user.timezone);
@@ -451,7 +446,7 @@ export async function getCalendarMonth(year: number, month1: number) {
 }
 
 export async function getSettings() {
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const [courseCount, eventCount] = await Promise.all([
     prisma.course.count({ where: { userId: user.id } }),
     prisma.timetableEvent.count({ where: { userId: user.id } }),

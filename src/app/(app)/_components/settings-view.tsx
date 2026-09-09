@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Flame,
   GraduationCap,
+  LogOut,
   Save,
   User,
   type LucideIcon,
@@ -17,6 +18,7 @@ import { SectionTitle } from "./section-title";
 import { CourseManager } from "./course-manager";
 import { TimezoneSelect } from "./timezone-select";
 import { updateProfile } from "../_lib/actions";
+import { logout } from "@/app/(auth)/_lib/actions";
 import type { getSettings } from "../_lib/queries";
 
 const THEMES = [
@@ -211,6 +213,13 @@ export function SettingsView({ data }: { data: SettingsData }) {
 
       <SectionTitle count={`${data.courses.length}개`}>과목 관리</SectionTitle>
       <CourseManager courses={data.courses} />
+
+      <form action={logout} className="mt-5">
+        <button type="submit" className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full border-2 border-border bg-surface text-sm font-bold text-primary-strong">
+          <LogOut size={16} aria-hidden="true" />
+          로그아웃
+        </button>
+      </form>
 
       <p className="mt-4 text-center text-[11.5px] text-muted">FocusPlan · MVP 0.1</p>
     </div>

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { CalendarView } from "../_components/calendar-view";
-import { getCalendarMonth, getCurrentUser } from "../_lib/queries";
+import { requireCurrentUser } from "@/lib/dal/auth";
+import { getCalendarMonth } from "../_lib/queries";
 
 export const metadata: Metadata = { title: "캘린더" };
 
 export default async function CalendarPage({ searchParams }: { searchParams: Promise<{ year?: string; month?: string }> }) {
   const params = await searchParams;
-  const user = await getCurrentUser();
+  const user = await requireCurrentUser();
   const current = Object.fromEntries(
     new Intl.DateTimeFormat("en-CA", { timeZone: user.timezone, year: "numeric", month: "numeric" })
       .formatToParts(new Date())
