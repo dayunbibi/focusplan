@@ -124,8 +124,8 @@ export function TaskRow({
       </span>
       {editable && (
         <span className="flex shrink-0 gap-1">
-          <button type="button" onClick={(event) => { event.preventDefault(); setEditing(true); }} className="grid size-9 place-items-center rounded-full text-muted hover:bg-surface-soft" aria-label={`${task.title} 편집`}><Pencil size={15} aria-hidden="true" /></button>
-          <button type="button" onClick={(event) => { event.preventDefault(); remove(); }} disabled={pending} className="grid size-9 place-items-center rounded-full text-now hover:bg-surface-soft disabled:opacity-50" aria-label={`${task.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button>
+          <button type="button" onClick={(event) => { event.preventDefault(); setEditing(true); }} className="grid size-11 place-items-center rounded-full text-muted hover:bg-surface-soft" aria-label={`${task.title} 편집`}><Pencil size={15} aria-hidden="true" /></button>
+          <button type="button" onClick={(event) => { event.preventDefault(); remove(); }} disabled={pending} className="grid size-11 place-items-center rounded-full text-now hover:bg-surface-soft disabled:opacity-50" aria-label={`${task.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button>
         </span>
       )}
       {error && !editing && <span role="alert" className="sr-only">{error}</span>}

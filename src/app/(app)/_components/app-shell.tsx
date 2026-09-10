@@ -28,13 +28,15 @@ export function AppShell({
             <span className="font-display text-[17px] font-semibold text-primary">FocusPlan</span>
           </span>
           <div className="flex items-center gap-1.5">
-            <Link
-              href="/settings"
-              aria-label="설정 열기"
-              className="grid size-11 place-items-center rounded-full border-2 border-border bg-surface text-muted"
+            {/* 알림 기능은 아직 없음(수신 로직 없음). 실제 알림을 붙이기 전까지는
+                설정으로 잘못 연결하는 대신 비활성 표시만 해둔다. */}
+            <span
+              className="grid size-11 place-items-center rounded-full border-2 border-border bg-surface text-muted/50"
+              title="알림 기능은 준비 중이에요"
+              aria-label="알림 기능은 아직 준비 중이에요"
             >
               <Bell size={18} strokeWidth={1.8} aria-hidden="true" />
-            </Link>
+            </span>
             <Link
               href="/settings"
               aria-label="설정 열기"

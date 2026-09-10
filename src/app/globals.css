@@ -188,6 +188,10 @@ a {
 .tabs-scroll {
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
+  /* 가로 스크롤이 더 있다는 걸 알려주는 오른쪽 끝 페이드. 스크롤 위치와 무관하게 항상
+     보이는 단순한 정적 힌트로, JS 없이 "더 있을 수 있다"는 신호만 준다. */
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
 }
 .tabs-scroll::-webkit-scrollbar {
   display: none;
