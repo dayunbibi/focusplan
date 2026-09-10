@@ -45,7 +45,7 @@ export function ClassCard({ group, index }: { group: ClassGroup; index: number }
             type="button"
             onClick={() => setEditing(true)}
             style={{ color: COURSE_INK_MUTED }}
-            className="grid size-9 place-items-center rounded-full"
+            className="grid size-11 place-items-center rounded-full"
             aria-label={`${group.name} 편집`}
           >
             <Pencil size={15} aria-hidden="true" />
@@ -55,7 +55,7 @@ export function ClassCard({ group, index }: { group: ClassGroup; index: number }
             onClick={remove}
             disabled={pending}
             style={{ color: COURSE_DANGER }}
-            className="grid size-9 place-items-center rounded-full disabled:opacity-50"
+            className="grid size-11 place-items-center rounded-full disabled:opacity-50"
             aria-label={`${group.name} 삭제`}
           >
             <Trash2 size={15} aria-hidden="true" />

@@ -44,10 +44,15 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
             타이머 시작
           </button>
         </StickerCard>
-      ) : (
+      ) : sessions.length > 0 ? (
         <StickerCard rotate={0.9} className="mt-[18px]">
           <p className="text-[13px] font-bold text-primary">오늘 공부 세션을 다 끝냈어요 🎉</p>
           <p className="mt-1.5 text-[12.5px] text-muted">공부 계획에서 새 세션을 추가할 수 있어요.</p>
+        </StickerCard>
+      ) : (
+        <StickerCard rotate={0.9} className="mt-[18px]">
+          <p className="text-[13px] font-bold text-primary">오늘은 계획된 공부 세션이 없어요</p>
+          <p className="mt-1.5 text-[12.5px] text-muted">공부 계획에서 오늘 세션을 추가해볼까요?</p>
         </StickerCard>
       )}
 
