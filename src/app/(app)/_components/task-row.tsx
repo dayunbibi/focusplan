@@ -4,6 +4,8 @@ import { useState, useTransition } from "react";
 import { Pencil, Save, Trash2, X } from "lucide-react";
 import type { CourseVM, TaskVM } from "../_lib/queries";
 import { deleteTask, toggleTask, updateTask } from "../_lib/actions";
+import { fromDateTimeLocal, toDateTimeLocal } from "../_lib/local-datetime";
+import { useTimezone } from "../_lib/ui-store";
 
 const rotate = (i: number) => (i % 3 === 0 ? "-0.7deg" : i % 3 === 1 ? "0.6deg" : "-0.4deg");
 
@@ -11,13 +13,6 @@ const badgeClass = (priority: TaskVM["priority"]) =>
   priority === "높음" ? "text-primary" : priority === "보통" ? "text-now" : "";
 
 const fieldClass = "min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary";
-
-function localDateTime(iso: string | null) {
-  if (!iso) return "";
-  const date = new Date(iso);
-  const offset = date.getTimezoneOffset() * 60_000;
-  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
-}
 
 export function TaskRow({
   task,
@@ -32,13 +27,14 @@ export function TaskRow({
   editable?: boolean;
   courses?: CourseVM[];
 }) {
+  const timezone = useTimezone();
   const [pending, start] = useTransition();
   const [editing, setEditing] = useState(false);
   const [title, setTitle] = useState(task.title);
   const [notes, setNotes] = useState(task.notes ?? "");
   const [courseId, setCourseId] = useState(task.courseId ?? "");
   const [priority, setPriority] = useState(task.priorityValue);
-  const [dueAt, setDueAt] = useState(localDateTime(task.dueAt));
+  const [dueAt, setDueAt] = useState(toDateTimeLocal(task.dueAt, timezone));
   const [error, setError] = useState("");
   const onToggle = () => start(async () => {
     const result = await toggleTask(task.id);
@@ -52,7 +48,7 @@ export function TaskRow({
       notes: notes || null,
       courseId: courseId || null,
       priority,
-      dueAt: dueAt ? new Date(dueAt).toISOString() : null,
+      dueAt: dueAt ? fromDateTimeLocal(dueAt, timezone) : null,
     });
     if (result.ok) {
       setEditing(false);

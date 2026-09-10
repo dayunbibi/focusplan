@@ -10,6 +10,7 @@ export type FocusSession = {
 };
 
 type UiValue = {
+  timezone: string;
   sheetOpen: boolean;
   openSheet: () => void;
   closeSheet: () => void;
@@ -28,7 +29,12 @@ export function useUi() {
   return ctx;
 }
 
-export function UiProvider({ children }: { children: React.ReactNode }) {
+/** 로그인한 사용자의 저장된 IANA 타임존. 모든 날짜 입력·표시 변환의 기준. */
+export function useTimezone() {
+  return useUi().timezone;
+}
+
+export function UiProvider({ children, timezone }: { children: React.ReactNode; timezone: string }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [focus, setFocus] = useState<FocusSession | null>(null);
   const [toast, setToast] = useState("");
@@ -41,6 +47,7 @@ export function UiProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value: UiValue = {
+    timezone,
     sheetOpen,
     openSheet: useCallback(() => setSheetOpen(true), []),
     closeSheet: useCallback(() => setSheetOpen(false), []),

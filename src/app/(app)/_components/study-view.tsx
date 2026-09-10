@@ -12,7 +12,8 @@ import {
   toggleStudySession,
   updateStudySession,
 } from "../_lib/actions";
-import { useUi } from "../_lib/ui-store";
+import { useTimezone, useUi } from "../_lib/ui-store";
+import { fromDateTimeLocal, nextHourLocal, toDateTimeLocal } from "../_lib/local-datetime";
 import { SectionTitle } from "./section-title";
 
 type StudyData = Awaited<ReturnType<typeof getStudyPlan>>;
@@ -20,21 +21,23 @@ type Session = StudyData["sessions"][number];
 const fieldClass = "min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary";
 const bars = ["bg-primary", "bg-done", "bg-now"];
 
-function localDateTime(iso?: string) {
-  const date = iso ? new Date(iso) : new Date();
-  if (!iso) date.setHours(date.getHours() + 1, 0, 0, 0);
-  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
-}
-
 function StudyForm({ data, item, onClose }: { data: StudyData; item?: Session; onClose: () => void }) {
+  const timezone = useTimezone();
   const [title, setTitle] = useState(item?.title ?? "");
   const [courseId, setCourseId] = useState(item?.courseId ?? "");
-  const [plannedAt, setPlannedAt] = useState(localDateTime(item?.plannedAt));
+  const [plannedAt, setPlannedAt] = useState(
+    item ? toDateTimeLocal(item.plannedAt, timezone) : nextHourLocal(timezone),
+  );
   const [durationMin, setDurationMin] = useState(item?.durationMin ?? 50);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
   const save = () => start(async () => {
-    const payload = { title, courseId: courseId || null, plannedAt: new Date(plannedAt).toISOString(), durationMin };
+    const plannedIso = fromDateTimeLocal(plannedAt, timezone);
+    if (!plannedIso) {
+      setError("시작 시간을 확인하세요.");
+      return;
+    }
+    const payload = { title, courseId: courseId || null, plannedAt: plannedIso, durationMin };
     const result = item ? await updateStudySession({ ...payload, id: item.id }) : await createStudySession(payload);
     if (result.ok) onClose(); else setError(result.error);
   });
@@ -64,7 +67,7 @@ function SessionRow({ session, data, index }: { session: Session; data: StudyDat
   };
   return (
     <div style={{ transform: `rotate(${index % 2 ? 0.5 : -0.5}deg)` }} className={`rounded-[18px] border-2 ${session.done ? "border-done" : "border-border"} bg-surface p-3.5 ${pending ? "opacity-60" : ""}`}>
-      <div className="flex items-center gap-3"><button type="button" onClick={() => start(async () => { const result = await toggleStudySession(session.id); if (!result.ok) setError(result.error); })} className={`grid size-10 shrink-0 place-items-center rounded-xl bg-surface-soft ${session.done ? "text-done" : "text-primary"}`} aria-label={`${session.title} ${session.done ? "미완료" : "완료"} 처리`}>{session.done ? <Check size={18} aria-hidden="true" /> : <BookOpen size={18} aria-hidden="true" />}</button><div className="min-w-0 flex-1"><p className="flex items-center gap-1.5 text-[11px] font-extrabold text-primary">{session.course || "자유 공부"}{session.ai && <span className="inline-flex items-center gap-0.5 rounded-full bg-surface-soft px-1.5 py-0.5 text-[9.5px] font-extrabold text-now"><Sparkles size={9} aria-hidden="true" />AI</span>}</p><p className={`mt-0.5 text-[13.5px] font-bold ${session.done ? "text-muted line-through" : ""}`}>{session.title}</p><p className="mt-0.5 text-[11px] text-muted">{session.date} · {session.time} · {session.durationMin}분</p></div><div className="flex shrink-0"><button type="button" onClick={() => openFocus({ id: session.id, course: session.course, title: session.title, durationMin: session.durationMin })} disabled={session.done} className="grid size-9 place-items-center rounded-full text-primary disabled:opacity-30" aria-label={`${session.title} 타이머 시작`}><Play size={15} aria-hidden="true" /></button><button type="button" onClick={() => setEditing(true)} className="grid size-9 place-items-center rounded-full text-muted" aria-label={`${session.title} 편집`}><Pencil size={15} aria-hidden="true" /></button><button type="button" onClick={remove} className="grid size-9 place-items-center rounded-full text-now" aria-label={`${session.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button></div></div>
+      <div className="flex items-center gap-3"><button type="button" onClick={() => start(async () => { const result = await toggleStudySession(session.id); if (!result.ok) setError(result.error); })} className={`grid size-10 shrink-0 place-items-center rounded-xl bg-surface-soft ${session.done ? "text-done" : "text-primary"}`} aria-label={`${session.title} ${session.done ? "미완료" : "완료"} 처리`}>{session.done ? <Check size={18} aria-hidden="true" /> : <BookOpen size={18} aria-hidden="true" />}</button><div className="min-w-0 flex-1"><p className="flex items-center gap-1.5 text-[11px] font-extrabold text-primary">{session.course || "자유 공부"}{session.ai && <span className="inline-flex items-center gap-0.5 rounded-full bg-surface-soft px-1.5 py-0.5 text-[9.5px] font-extrabold text-now"><Sparkles size={9} aria-hidden="true" />자동</span>}</p><p className={`mt-0.5 text-[13.5px] font-bold ${session.done ? "text-muted line-through" : ""}`}>{session.title}</p><p className="mt-0.5 text-[11px] text-muted">{session.date} · {session.time} · {session.durationMin}분</p></div><div className="flex shrink-0"><button type="button" onClick={() => openFocus({ id: session.id, course: session.course, title: session.title, durationMin: session.durationMin })} disabled={session.done} className="grid size-9 place-items-center rounded-full text-primary disabled:opacity-30" aria-label={`${session.title} 타이머 시작`}><Play size={15} aria-hidden="true" /></button><button type="button" onClick={() => setEditing(true)} className="grid size-9 place-items-center rounded-full text-muted" aria-label={`${session.title} 편집`}><Pencil size={15} aria-hidden="true" /></button><button type="button" onClick={remove} className="grid size-9 place-items-center rounded-full text-now" aria-label={`${session.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button></div></div>
       {error && <p role="alert" className="mt-2 text-xs font-bold text-now">{error}</p>}
     </div>
   );
@@ -78,7 +81,7 @@ export function StudyView({ data }: { data: StudyData }) {
   const generate = () =>
     startGen(async () => {
       const result = await generateAiStudyPlan();
-      if (result.ok) showToast(result.created ? `AI가 세션 ${result.created}개를 짜줬어요` : "이번 주엔 급한 마감이 없어요");
+      if (result.ok) showToast(result.created ? `공부 세션 ${result.created}개를 자동으로 짰어요` : "이번 주엔 급한 마감이 없어요");
       else setGenError(result.error);
     });
   return (
@@ -94,7 +97,7 @@ export function StudyView({ data }: { data: StudyData }) {
           className="mt-3 flex min-h-11 w-full items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-surface font-display text-[13px] font-semibold text-primary disabled:opacity-50"
         >
           <Sparkles size={15} aria-hidden="true" />
-          {genPending ? "계획 짜는 중..." : "AI로 이번 주 계획 짜기"}
+          {genPending ? "계획 짜는 중..." : "이번 주 공부 계획 자동으로 짜기"}
         </button>
         {genError && <p role="alert" className="mt-2 text-xs font-bold text-now">{genError}</p>}
       </StickerCard>

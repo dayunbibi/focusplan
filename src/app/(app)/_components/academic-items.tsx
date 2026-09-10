@@ -14,18 +14,10 @@ import {
 } from "../_lib/actions";
 import type { AssignmentVM, ExamVM } from "./tasks-view";
 import { SectionTitle } from "./section-title";
+import { fromDateTimeLocal, toDateTimeLocal, tomorrowEveningLocal } from "../_lib/local-datetime";
+import { useTimezone } from "../_lib/ui-store";
 
 const fieldClass = "min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary";
-
-function localDateTime(iso?: string) {
-  if (!iso) {
-    const date = new Date(Date.now() + 86_400_000);
-    date.setHours(18, 0, 0, 0);
-    return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
-  }
-  const date = new Date(iso);
-  return new Date(date.getTime() - date.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
-}
 
 function AcademicForm({
   kind,
@@ -38,18 +30,26 @@ function AcademicForm({
   item?: AssignmentVM | ExamVM;
   onClose: () => void;
 }) {
+  const timezone = useTimezone();
   const assignment = kind === "assignment" ? (item as AssignmentVM | undefined) : undefined;
   const exam = kind === "exam" ? (item as ExamVM | undefined) : undefined;
+  const initialDate = assignment?.dueAt ?? exam?.examAt;
   const [title, setTitle] = useState(item?.title ?? "");
   const [courseId, setCourseId] = useState(item?.courseId ?? "");
-  const [date, setDate] = useState(localDateTime(assignment?.dueAt ?? exam?.examAt));
+  const [date, setDate] = useState(
+    initialDate ? toDateTimeLocal(initialDate, timezone) : tomorrowEveningLocal(timezone),
+  );
   const [detail, setDetail] = useState(assignment?.description ?? exam?.notes ?? "");
   const [location, setLocation] = useState(exam?.location ?? "");
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
 
   const save = () => start(async () => {
-    const dateIso = new Date(date).toISOString();
+    const dateIso = fromDateTimeLocal(date, timezone);
+    if (!dateIso) {
+      setError("날짜와 시간을 확인하세요.");
+      return;
+    }
     const result = kind === "assignment"
       ? assignment
         ? await updateAssignment({ id: assignment.id, title, courseId: courseId || null, description: detail || null, dueAt: dateIso })

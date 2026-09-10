@@ -14,7 +14,7 @@ export default async function ProductLayout({ children }: { children: React.Reac
   const courseOptions = courses.map((c) => ({ id: c.id, name: c.name }));
 
   return (
-    <UiProvider>
+    <UiProvider timezone={user.timezone}>
       <AppShell
         userInitial={(user.name ?? user.email).trim().charAt(0).toUpperCase()}
         overlays={
