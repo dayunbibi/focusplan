@@ -29,8 +29,8 @@ export function AppShell({
           </span>
           <div className="flex items-center gap-1.5">
             <Link
-              href="/settings#notifications"
-              aria-label="알림 보기"
+              href="/settings"
+              aria-label="설정 열기"
               className="grid size-11 place-items-center rounded-full border-2 border-border bg-surface text-muted"
             >
               <Bell size={18} strokeWidth={1.8} aria-hidden="true" />

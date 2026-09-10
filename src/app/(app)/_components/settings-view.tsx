@@ -2,11 +2,8 @@
 
 import { useEffect, useState, useTransition } from "react";
 import {
-  AlarmClock,
-  Bell,
   BookOpenCheck,
   ChevronRight,
-  Flame,
   GraduationCap,
   LogOut,
   Save,
@@ -27,31 +24,7 @@ const THEMES = [
   { value: "dark", label: "다크" },
 ];
 
-const NOTIF_KEY = "focusplan-notifs";
-const notifRows: { key: string; icon: LucideIcon; title: string; desc: string; default: boolean }[] = [
-  { key: "class", icon: Bell, title: "수업 시작 알림", desc: "10분 전에 알려줘요", default: true },
-  { key: "task", icon: AlarmClock, title: "과제 마감 알림", desc: "D-3부터 매일", default: true },
-  { key: "study", icon: Flame, title: "공부 세션 리마인더", desc: "시작 5분 전", default: false },
-];
-
 type SettingsData = Awaited<ReturnType<typeof getSettings>>;
-
-function Toggle({ on, onClick, label }: { on: boolean; onClick: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      onClick={onClick}
-      className={`flex h-7 w-12 flex-none items-center rounded-full border-2 px-[3px] transition-colors ${
-        on ? "justify-end border-primary-strong bg-primary" : "justify-start border-border bg-surface-soft"
-      }`}
-    >
-      <span className="size-5 rounded-full bg-white shadow-[0_1px_3px_rgba(255,127,178,0.4)]" />
-    </button>
-  );
-}
 
 function Row({
   icon: Icon,
@@ -86,17 +59,12 @@ export function SettingsView({ data }: { data: SettingsData }) {
   const [timezone, setTimezone] = useState(data.timezone);
   const [profileMessage, setProfileMessage] = useState("");
   const [profilePending, startProfile] = useTransition();
-  const [notifs, setNotifs] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(notifRows.map((r) => [r.key, r.default])),
-  );
 
   // 브라우저 전용 저장소를 마운트 후 1회 읽어 반영 (SSR 값과 다를 수 있음)
   useEffect(() => {
     try {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTheme(localStorage.getItem("focusplan-theme") || "system");
-      const raw = localStorage.getItem(NOTIF_KEY);
-      if (raw) setNotifs((prev) => ({ ...prev, ...JSON.parse(raw) }));
     } catch {
       /* 무시 */
     }
@@ -110,18 +78,6 @@ export function SettingsView({ data }: { data: SettingsData }) {
     } catch {
       /* 무시 */
     }
-  };
-
-  const toggleNotif = (key: string) => {
-    setNotifs((prev) => {
-      const next = { ...prev, [key]: !prev[key] };
-      try {
-        localStorage.setItem(NOTIF_KEY, JSON.stringify(next));
-      } catch {
-        /* 무시 */
-      }
-      return next;
-    });
   };
 
   const academicRows: { icon: LucideIcon; title: string; desc: string }[] = [
@@ -174,23 +130,6 @@ export function SettingsView({ data }: { data: SettingsData }) {
           >
             {t.label}
           </button>
-        ))}
-      </div>
-
-      <div id="notifications" className="scroll-mt-4"><SectionTitle>알림</SectionTitle></div>
-      <div
-        style={{ transform: "rotate(-0.5deg)" }}
-        className="rounded-[18px] border-2 border-border bg-surface px-4 shadow-[0_2px_6px_rgba(255,127,178,0.14)]"
-      >
-        {notifRows.map((r, i) => (
-          <Row
-            key={r.key}
-            icon={r.icon}
-            title={r.title}
-            desc={r.desc}
-            last={i === notifRows.length - 1}
-            trailing={<Toggle on={notifs[r.key]} onClick={() => toggleNotif(r.key)} label={`${r.title} 켜기`} />}
-          />
         ))}
       </div>
 
