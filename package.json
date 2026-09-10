@@ -4,14 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
+    "build": "prisma generate && next build --webpack",
+    "postinstall": "prisma generate",
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "auth:set-password": "tsx scripts/set-user-password.ts",
-    "test:auth": "tsx --test tests/auth.test.ts",
+    "test": "tsx --test tests/*.test.ts",
     "start": "next start",
     "lint": "eslint"
   },
