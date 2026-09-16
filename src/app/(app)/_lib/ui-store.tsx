@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useRef, useState } from "react";
+import type { ClassGroupInitial } from "../_components/class-schedule-form";
 
 export type FocusSession = {
   id: string;
@@ -9,11 +10,16 @@ export type FocusSession = {
   durationMin: number;
 };
 
+export type ClassSheetState = { initial?: ClassGroupInitial; defaultColor: string } | null;
+
 type UiValue = {
   timezone: string;
   sheetOpen: boolean;
   openSheet: () => void;
   closeSheet: () => void;
+  classSheet: ClassSheetState;
+  openClassSheet: (state: { initial?: ClassGroupInitial; defaultColor: string }) => void;
+  closeClassSheet: () => void;
   focus: FocusSession | null;
   openFocus: (session: FocusSession) => void;
   closeFocus: () => void;
@@ -36,6 +42,7 @@ export function useTimezone() {
 
 export function UiProvider({ children, timezone }: { children: React.ReactNode; timezone: string }) {
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [classSheet, setClassSheet] = useState<ClassSheetState>(null);
   const [focus, setFocus] = useState<FocusSession | null>(null);
   const [toast, setToast] = useState("");
   const toastTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -51,6 +58,9 @@ export function UiProvider({ children, timezone }: { children: React.ReactNode; 
     sheetOpen,
     openSheet: useCallback(() => setSheetOpen(true), []),
     closeSheet: useCallback(() => setSheetOpen(false), []),
+    classSheet,
+    openClassSheet: useCallback((state: { initial?: ClassGroupInitial; defaultColor: string }) => setClassSheet(state), []),
+    closeClassSheet: useCallback(() => setClassSheet(null), []),
     focus,
     openFocus: useCallback((session: FocusSession) => setFocus(session), []),
     closeFocus: useCallback(() => setFocus(null), []),

@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { Plus, Save, Trash2, X } from "lucide-react";
 import { TimeSelect } from "./time-select";
 import { ColorSwatchPicker } from "./color-swatch-picker";
-import { saveClassSchedule } from "../_lib/actions";
+import { deleteClassGroup, saveClassSchedule } from "../_lib/actions";
+import { COURSE_DANGER } from "../_lib/course-colors";
 
 const WEEKDAYS = [
   { label: "월", value: 1 },
@@ -25,10 +26,13 @@ export function ClassScheduleForm({
   initial,
   defaultColor,
   onClose,
+  bare = false,
 }: {
   initial?: ClassGroupInitial;
   defaultColor: string;
   onClose: () => void;
+  /** 바텀시트 안에서 쓸 때: 시트가 이미 카드 배경/헤더를 제공하므로 자체 테두리·헤더를 생략한다. */
+  bare?: boolean;
 }) {
   const [name, setName] = useState(initial?.name ?? "");
   const [color, setColor] = useState(initial?.color ?? defaultColor);
@@ -64,19 +68,31 @@ export function ClassScheduleForm({
     });
   };
 
-  return (
-    <div className="rounded-[18px] border-2 border-primary bg-surface p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-display text-sm font-semibold text-primary">{initial ? "수업 수정" : "수업 추가"}</h3>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="닫기"
-          className="grid size-9 place-items-center rounded-full border-2 border-border text-muted"
-        >
-          <X size={15} aria-hidden="true" />
-        </button>
-      </div>
+  const remove = () => {
+    if (!initial) return;
+    if (!window.confirm(`“${initial.name}” 수업을 삭제할까요? 등록된 시간 ${initial.slots.length}개가 모두 삭제돼요.`)) return;
+    start(async () => {
+      const result = await deleteClassGroup({ courseId: initial.courseId, eventIds: initial.eventIds });
+      if (result.ok) onClose();
+      else setError(result.error);
+    });
+  };
+
+  const body = (
+    <>
+      {!bare && (
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="font-display text-sm font-semibold text-primary">{initial ? "수업 수정" : "수업 추가"}</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="닫기"
+            className="grid size-9 place-items-center rounded-full border-2 border-border text-muted"
+          >
+            <X size={15} aria-hidden="true" />
+          </button>
+        </div>
+      )}
 
       <label className="text-[11.5px] font-extrabold text-muted">
         수업 이름
@@ -152,15 +168,31 @@ export function ClassScheduleForm({
 
       {error && <p role="alert" className="mt-3 text-[12px] font-bold text-now">{error}</p>}
 
-      <button
-        type="button"
-        onClick={save}
-        disabled={!canSave}
-        className="mt-4 flex min-h-[46px] w-full items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary font-display text-sm font-semibold text-white disabled:opacity-50"
-      >
-        <Save size={15} aria-hidden="true" />
-        저장
-      </button>
-    </div>
+      <div className="mt-4 flex gap-2.5">
+        {initial && (
+          <button
+            type="button"
+            onClick={remove}
+            disabled={pending}
+            style={{ borderColor: COURSE_DANGER, color: COURSE_DANGER }}
+            className="flex min-h-[46px] flex-none items-center justify-center gap-1.5 rounded-full border-2 px-4 font-display text-sm font-semibold disabled:opacity-50"
+          >
+            <Trash2 size={15} aria-hidden="true" />
+            삭제
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={save}
+          disabled={!canSave}
+          className="flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary font-display text-sm font-semibold text-white disabled:opacity-50"
+        >
+          <Save size={15} aria-hidden="true" />
+          저장
+        </button>
+      </div>
+    </>
   );
+
+  return bare ? body : <div className="rounded-[18px] border-2 border-primary bg-surface p-4">{body}</div>;
 }
