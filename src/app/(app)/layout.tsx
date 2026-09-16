@@ -1,8 +1,10 @@
 import { UiProvider } from "./_lib/ui-store";
 import { getCourses, getTasks } from "./_lib/queries";
 import { requireCurrentUser } from "@/lib/dal/auth";
+import { paletteColorAt } from "./_lib/course-colors";
 import { AppShell } from "./_components/app-shell";
 import { AddTaskSheet } from "./_components/add-task-sheet";
+import { ClassSheet } from "./_components/class-sheet";
 import { FocusOverlay } from "./_components/focus-overlay";
 import { KittyFab } from "./_components/kitty-fab";
 import { KittyToast } from "./_components/kitty-toast";
@@ -21,8 +23,9 @@ export default async function ProductLayout({ children }: { children: React.Reac
         userInitial={(user.name ?? user.email).trim().charAt(0).toUpperCase()}
         overlays={
           <>
-            <KittyFab />
+            <KittyFab nextClassColor={paletteColorAt(courses.length)} />
             <AddTaskSheet courses={courseOptions} />
+            <ClassSheet />
             <FocusOverlay tasks={tasks} />
             <KittyToast />
           </>

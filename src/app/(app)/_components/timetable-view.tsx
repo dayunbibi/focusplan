@@ -3,9 +3,9 @@ import { StickerCard } from "@/components/kitty/sticker-card";
 import { Mascot } from "@/components/kitty/mascot";
 import type { getTimetable } from "../_lib/queries";
 import { SectionTitle } from "./section-title";
-import { TimetableAddForm } from "./timetable-add-form";
+import { ClassBlockButton } from "./class-block-button";
 import { ClassCard, type ClassGroup } from "./class-card";
-import { COURSE_INK, COURSE_INK_MUTED, paletteColorAt } from "../_lib/course-colors";
+import { COURSE_INK, COURSE_INK_MUTED } from "../_lib/course-colors";
 
 type TimetableData = Awaited<ReturnType<typeof getTimetable>>;
 type Row = TimetableData["rows"][number];
@@ -125,6 +125,8 @@ function TodayClassRow({ event, index }: { event: Row; index: number }) {
 
 export function TimetableView({ data }: { data: TimetableData }) {
   const groups = groupClasses(data.rows);
+  const groupByEventId = new Map<string, ClassGroup>();
+  for (const group of groups) for (const id of group.eventIds) groupByEventId.set(id, group);
 
   return (
     <div>
@@ -166,28 +168,25 @@ export function TimetableView({ data }: { data: TimetableData }) {
                     const { top, height } = blockGeometry(event.startTime, event.endTime);
                     const widthPct = 100 / totalCols;
                     const lines = height >= 38 ? 3 : height >= 24 ? 2 : 1;
+                    const group = groupByEventId.get(event.id);
+                    if (!group) return null;
                     return (
-                      <div
+                      <ClassBlockButton
                         key={event.id}
+                        title={event.title}
+                        startTime={event.startTime}
+                        endTime={event.endTime}
+                        location={event.location}
+                        lines={lines}
+                        group={group}
                         style={{
                           top,
                           height,
                           left: `${col * widthPct}%`,
                           width: `${widthPct}%`,
                           backgroundColor: event.color,
-                          color: COURSE_INK,
                         }}
-                        className="absolute overflow-hidden rounded-[9px] border border-black/10 px-1 py-0.5 text-[9.5px] font-extrabold leading-tight"
-                        title={`${event.title} ${event.startTime}-${event.endTime}`}
-                      >
-                        <p className="truncate">{event.title}</p>
-                        {lines >= 3 && event.location && <p className="truncate font-semibold opacity-75">{event.location}</p>}
-                        {lines >= 2 && (
-                          <p className="truncate font-semibold tabular-nums opacity-60">
-                            {event.startTime}–{event.endTime}
-                          </p>
-                        )}
-                      </div>
+                      />
                     );
                   })}
                 </div>
@@ -196,8 +195,6 @@ export function TimetableView({ data }: { data: TimetableData }) {
           </div>
         </div>
       </div>
-
-      <TimetableAddForm nextColor={paletteColorAt(data.courseCount)} />
 
       <SectionTitle count={`${data.todayRows.length}개`}>오늘 수업</SectionTitle>
       {data.todayRows.length ? (
@@ -212,7 +209,7 @@ export function TimetableView({ data }: { data: TimetableData }) {
       <div className="flex flex-col gap-2.5">
         {groups.map((group, index) => <ClassCard key={group.key} group={group} index={index} />)}
       </div>
-      {!groups.length && <p className="rounded-[18px] border-2 border-dashed border-border px-4 py-5 text-center text-[12.5px] text-muted">수업 추가 버튼으로 첫 시간표를 만들어보세요.</p>}
+      {!groups.length && <p className="rounded-[18px] border-2 border-dashed border-border px-4 py-5 text-center text-[12.5px] text-muted">＋ 버튼으로 첫 시간표를 만들어보세요.</p>}
     </div>
   );
 }
