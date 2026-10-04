@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createSession, deleteCurrentSession } from "@/lib/auth/session";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 import { prisma } from "@/lib/prisma";
+import { DEMO_EMAIL } from "@/lib/demo";
 
 export type AuthFormState = {
   message?: string;
@@ -91,6 +92,15 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
     ? await verifyPassword(parsed.data.password, user.passwordHash)
     : false;
   if (!user || !authenticated) return { message: "이메일 또는 비밀번호가 올바르지 않아요." };
+
+  await createSession(user.id);
+  redirect("/");
+}
+
+// One-click sign-in for the public demo account created by prisma/seed.ts
+export async function loginDemo(): Promise<AuthFormState> {
+  const user = await prisma.user.findUnique({ where: { email: DEMO_EMAIL }, select: { id: true } });
+  if (!user) return { message: "데모 계정이 아직 준비되지 않았어요. npm run db:seed를 먼저 실행하세요." };
 
   await createSession(user.id);
   redirect("/");
