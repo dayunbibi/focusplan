@@ -2,7 +2,7 @@
 
 A mobile-first student planner that keeps classes, tasks, assignments, exams, and study sessions in one place.
 
-**Live Demo:** _coming soon_
+**Live Demo:** https://focusplan-silk.vercel.app
 
 <!-- Add a screenshot to docs/screenshot-today.png, then remove this comment wrapper:
 ![FocusPlan Today screen](docs/screenshot-today.png)
