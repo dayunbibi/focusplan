@@ -4,9 +4,7 @@ A mobile-first student planner that keeps classes, tasks, assignments, exams, an
 
 **Live Demo:** https://focusplan-silk.vercel.app
 
-<!-- Add a screenshot to docs/screenshot-today.png, then remove this comment wrapper:
 ![FocusPlan Today screen](docs/screenshot-today.png)
--->
 
 ## Demo Account
 
