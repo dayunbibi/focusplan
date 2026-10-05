@@ -9,10 +9,10 @@ import { COURSE_INK, COURSE_INK_MUTED } from "../_lib/course-colors";
 
 type TimetableData = Awaited<ReturnType<typeof getTimetable>>;
 type Row = TimetableData["rows"][number];
-const weekdays = ["월", "화", "수", "목", "금"];
+const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri"];
 const hours = Array.from({ length: 14 }, (_, index) => index + 8);
 
-/** 시간축 1시간 = HOUR_HEIGHT px. 모바일/데스크톱 모두 같은 값을 써서 비율이 항상 동일하다. */
+/** One hour on the time axis = HOUR_HEIGHT px. Mobile and desktop share it so proportions always match. */
 const HOUR_HEIGHT = 60;
 const PIXELS_PER_MINUTE = HOUR_HEIGHT / 60;
 const GRID_START_MIN = hours[0] * 60;
@@ -23,7 +23,7 @@ function timeToMinutes(hhmm: string) {
   return h * 60 + m;
 }
 
-/** startTime~endTime을 그리드 기준 top/height(px)로 변환. 그리드 범위 밖은 잘라낸다. */
+/** Converts startTime-endTime into grid top/height in px, clipping anything outside the grid. */
 function blockGeometry(startTime: string, endTime: string) {
   const start = Math.min(Math.max(timeToMinutes(startTime), GRID_START_MIN), GRID_END_MIN);
   const end = Math.min(Math.max(timeToMinutes(endTime), GRID_START_MIN), GRID_END_MIN);
@@ -36,9 +36,9 @@ function blockGeometry(startTime: string, endTime: string) {
 type LaidOutEvent = { event: Row; col: number; totalCols: number };
 
 /**
- * 같은 요일 안에서 시간이 겹치는 수업들(실제로 몇 분씩 겹치는 실데이터가 있다)을
- * 나란히 배치하기 위해 컬럼을 배정한다. 표준 캘린더 겹침-컬럼 알고리즘: 시작 시간
- * 순으로 훑으며 끝난 컬럼에 재사용하고, 겹치는 클러스터 단위로 폭을 나눈다.
+ * Assigns columns so classes that overlap on the same day (real schedules do overlap by a
+ * few minutes) sit side by side. Standard calendar overlap algorithm: walk events by start
+ * time, reuse columns that have ended, and split the width per overlapping cluster.
  */
 function layoutDayColumn(events: Row[]): LaidOutEvent[] {
   const sorted = [...events].sort(
@@ -77,7 +77,7 @@ function layoutDayColumn(events: Row[]): LaidOutEvent[] {
   return result;
 }
 
-/** 과목이 연결된 일정은 courseId로, 아직 과목 없이 이름만 있는 일정은 이름으로 묶는다. */
+/** Groups events by courseId, or by name for events that have no course yet. */
 function groupClasses(rows: Row[]): ClassGroup[] {
   const groups = new Map<string, ClassGroup>();
   for (const row of rows) {
@@ -131,8 +131,8 @@ export function TimetableView({ data }: { data: TimetableData }) {
   return (
     <div>
       <StickerCard rotate={-1} tape="MY TIMETABLE">
-        <h1 className="font-display text-[22px] font-semibold text-primary-strong">내 시간표</h1>
-        <p className="mt-1.5 text-[12.5px] text-muted">과목 {data.courseCount}개 · 수업 {data.eventCount}개{data.todayLabel ? ` · 오늘은 ${data.todayLabel}요일` : ""}</p>
+        <h1 className="font-display text-[22px] font-semibold text-primary-strong">My Timetable</h1>
+        <p className="mt-1.5 text-[12.5px] text-muted">{data.courseCount} course{data.courseCount === 1 ? "" : "s"} · {data.eventCount} class{data.eventCount === 1 ? "" : "es"}{data.todayLabel ? ` · Today is ${data.todayLabel}` : ""}</p>
       </StickerCard>
 
       <div className="mt-[18px] overflow-hidden rounded-[18px] border-2 border-border bg-surface p-2 shadow-[0_2px_6px_rgba(255,127,178,0.14)]">
@@ -196,20 +196,20 @@ export function TimetableView({ data }: { data: TimetableData }) {
         </div>
       </div>
 
-      <SectionTitle count={`${data.todayRows.length}개`}>오늘 수업</SectionTitle>
+      <SectionTitle count={data.todayRows.length}>Today’s classes</SectionTitle>
       {data.todayRows.length ? (
         <div className="flex flex-col gap-2.5">
           {data.todayRows.map((event, index) => <TodayClassRow key={event.id} event={event} index={index} />)}
         </div>
       ) : (
-        <div className="rounded-[18px] border-2 border-dashed border-border px-4 py-7 text-center"><Mascot size={60} muted className="mx-auto" /><p className="mt-2 text-[12.5px] text-muted">오늘 등록된 수업이 없어요.</p></div>
+        <div className="rounded-[18px] border-2 border-dashed border-border px-4 py-7 text-center"><Mascot size={60} muted className="mx-auto" /><p className="mt-2 text-[12.5px] text-muted">No classes today.</p></div>
       )}
 
-      <SectionTitle count={`${groups.length}개`}>전체 수업</SectionTitle>
+      <SectionTitle count={groups.length}>All classes</SectionTitle>
       <div className="flex flex-col gap-2.5">
         {groups.map((group, index) => <ClassCard key={group.key} group={group} index={index} />)}
       </div>
-      {!groups.length && <p className="rounded-[18px] border-2 border-dashed border-border px-4 py-5 text-center text-[12.5px] text-muted">＋ 버튼으로 첫 시간표를 만들어보세요.</p>}
+      {!groups.length && <p className="rounded-[18px] border-2 border-dashed border-border px-4 py-5 text-center text-[12.5px] text-muted">Tap ＋ to build your timetable.</p>}
     </div>
   );
 }

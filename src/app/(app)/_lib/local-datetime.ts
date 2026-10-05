@@ -1,7 +1,7 @@
 /**
- * datetime-local <input> 값과 저장용 UTC instant 사이 변환을 사용자의 저장된 IANA
- * 타임존 기준으로 처리한다. 브라우저 로컬 타임존(getTimezoneOffset)에 의존하면 사용자가
- * 자기 시간대 밖(여행·VPN·시계 오설정)에 있을 때 마감·시험 시각이 어긋난다.
+ * Converts between datetime-local <input> values and stored UTC instants using the
+ * user's saved IANA timezone. Relying on the browser's local offset would shift due
+ * dates and exam times whenever the user is outside their zone (travel, VPN, wrong clock).
  */
 import { zonedDate } from "./date-utils";
 
@@ -23,7 +23,7 @@ function formatter(timeZone: string) {
   return f;
 }
 
-/** 저장된 UTC instant(ISO) → 사용자 타임존 벽시계 "YYYY-MM-DDTHH:mm" (datetime-local 입력값). */
+/** Stored UTC instant (ISO) → wall clock "YYYY-MM-DDTHH:mm" in the user's timezone (datetime-local value). */
 export function toDateTimeLocal(iso: string | null | undefined, timeZone: string): string {
   if (!iso) return "";
   const date = new Date(iso);
@@ -35,19 +35,19 @@ export function toDateTimeLocal(iso: string | null | undefined, timeZone: string
   return `${parts.year}-${parts.month}-${parts.day}T${parts.hour}:${parts.minute}`;
 }
 
-/** datetime-local 입력값("YYYY-MM-DDTHH:mm")을 사용자 타임존 벽시계로 해석해 UTC ISO 문자열로. */
+/** Reads a datetime-local value ("YYYY-MM-DDTHH:mm") as wall-clock time in the user's timezone and returns a UTC ISO string. */
 export function fromDateTimeLocal(value: string, timeZone: string): string | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(value);
   if (!match) return null;
   return zonedDate(+match[1], +match[2], +match[3], +match[4], +match[5], timeZone).toISOString();
 }
 
-/** 새 항목 기본값: 사용자 타임존 기준 내일 18:00 (datetime-local 입력값). */
+/** Default for new items: tomorrow 18:00 in the user's timezone (datetime-local value). */
 export function tomorrowEveningLocal(timeZone: string): string {
   return toDateTimeLocal(new Date(Date.now() + 86_400_000).toISOString(), timeZone).slice(0, 11) + "18:00";
 }
 
-/** 새 항목 기본값: 사용자 타임존 기준 다음 정시 (datetime-local 입력값). */
+/** Default for new items: the next full hour in the user's timezone (datetime-local value). */
 export function nextHourLocal(timeZone: string): string {
   return toDateTimeLocal(new Date(Date.now() + 3_600_000).toISOString(), timeZone).slice(0, 14) + "00";
 }

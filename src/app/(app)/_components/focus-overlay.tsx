@@ -18,7 +18,7 @@ export function FocusOverlay({ tasks }: { tasks: TaskVM[] }) {
       session={focus}
       tasks={tasks.filter((t) => !t.done).slice(0, 2)}
       onClose={closeFocus}
-      onDone={() => showToast("세션 완료! 잘했어요")}
+      onDone={() => showToast("Session complete. Nice work!")}
     />
   );
 }
@@ -50,8 +50,8 @@ function OverlayBody({
   const mm = String(Math.floor(secs / 60)).padStart(2, "0");
   const ss = String(secs % 60).padStart(2, "0");
   const offset = (CIRC * (1 - secs / full)).toFixed(2);
-  const state = secs === 0 ? "세션 완료" : ticking ? "집중 중" : "대기 중";
-  const startLabel = secs === full ? "시작하기" : "이어서";
+  const state = secs === 0 ? "Session complete" : ticking ? "Focusing" : "Ready";
+  const startLabel = secs === full ? "Start" : "Resume";
 
   const complete = () =>
     start(async () => {
@@ -72,27 +72,27 @@ function OverlayBody({
       }}
       role="dialog"
       aria-modal="true"
-      aria-label="집중 타이머"
+      aria-label="Focus timer"
       className="absolute inset-0 flex flex-col overflow-y-auto px-[22px] pb-[calc(1.75rem+env(safe-area-inset-bottom))] pt-[calc(1.375rem+env(safe-area-inset-top))] [animation:kitty-rise_.3s_cubic-bezier(.22,1,.36,1)]"
     >
       <div className="flex items-center justify-between">
         <button
           type="button"
           onClick={onClose}
-          aria-label="닫기"
+          aria-label="Close"
           className="grid size-11 place-items-center rounded-full border-2 border-border bg-surface text-muted"
         >
           <X size={18} strokeWidth={2.2} aria-hidden="true" />
         </button>
         <span className="rounded-full border-2 border-border bg-surface-soft px-3.5 py-1.5 text-[11.5px] font-extrabold text-primary">
-          {session.course || "집중 세션"}
+          {session.course || "Focus session"}
         </span>
         <span className="w-10" />
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center text-center">
         <p className="font-display text-[19px] font-semibold">{session.title}</p>
-        <p className="mt-1 text-[12.5px] text-muted">{session.durationMin}분 세션</p>
+        <p className="mt-1 text-[12.5px] text-muted">{session.durationMin}-minute session</p>
 
         <div className="relative mx-auto mt-[22px] grid size-[250px] place-items-center">
           <svg viewBox="0 0 240 240" width="250" height="250" className="-rotate-90" aria-hidden="true">
@@ -124,7 +124,7 @@ function OverlayBody({
               setRunning(false);
               setSecs(full);
             }}
-            aria-label="다시 시작"
+            aria-label="Restart"
             className="grid size-[52px] place-items-center rounded-full border-2 border-border bg-surface text-muted"
           >
             <RotateCcw size={20} strokeWidth={2} aria-hidden="true" />
@@ -138,7 +138,7 @@ function OverlayBody({
             {ticking ? (
               <>
                 <Pause size={18} strokeWidth={2} aria-hidden="true" />
-                일시정지
+                Pause
               </>
             ) : (
               <>
@@ -151,7 +151,7 @@ function OverlayBody({
             type="button"
             onClick={complete}
             disabled={pending}
-            aria-label="세션 완료"
+            aria-label="Complete session"
             className="grid size-[52px] place-items-center rounded-full border-2 border-done bg-surface-soft text-done disabled:opacity-50"
           >
             <Check size={20} strokeWidth={2} aria-hidden="true" />
@@ -161,12 +161,12 @@ function OverlayBody({
       </div>
 
       <div className="border-t-2 border-dashed border-border pt-3.5">
-        <p className="mb-2 font-display text-sm font-semibold text-primary">이 세션에서 할 것</p>
+        <p className="mb-2 font-display text-sm font-semibold text-primary">To do this session</p>
         <div className="flex flex-col gap-2">
           {tasks.length ? (
             tasks.map((task, i) => <TaskRow key={task.id} task={task} index={i} compact />)
           ) : (
-            <p className="text-[12.5px] text-muted">남은 할 일이 없어요. 푹 쉬어도 좋아요!</p>
+            <p className="text-[12.5px] text-muted">Nothing left on your list. Enjoy a break!</p>
           )}
         </div>
       </div>

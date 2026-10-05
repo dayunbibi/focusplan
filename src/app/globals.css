@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
-/* FocusPlan — "Kitty" 축소 팔레트.
- * 배경: --background --surface --surface-soft
- * 텍스트: --foreground(본문) --muted(보조)
- * 강조: --primary(핑크) / 상태: --now(경고·마감) --done(완료)
- * --lav 는 포커스 링에만 사용. 그 외 색은 위 토큰으로 통일.
- * --border/--shadow/--radius/--dots/--veil 는 구조용(색 팔레트 아님). */
+/* FocusPlan: reduced "Kitty" palette.
+ * Backgrounds: --background --surface --surface-soft
+ * Text: --foreground (body) --muted (secondary)
+ * Accent: --primary (pink) / States: --now (warning, due) --done (completed)
+ * --lav is only used for focus rings. Every other color uses the tokens above.
+ * --border/--shadow/--radius/--dots/--veil are structural, not part of the palette. */
 :root {
   --background: #fff4f8;
   --foreground: #5c3a4b;
@@ -22,7 +22,7 @@
   --done-ink: #256d56;
   --now-soft: #fff0e7;
   --now-ink: #944917;
-  --lav: #b79bec; /* 포커스 링 전용 */
+  --lav: #b79bec; /* focus rings only */
 
   --shadow: 0 2px 6px rgba(255, 127, 178, 0.14), 0 14px 34px rgba(255, 127, 178, 0.16);
   --radius: 22px;
@@ -125,7 +125,7 @@ body {
   background-size: 20px 20px;
 }
 
-/* 하트 체크박스 */
+/* Heart checkbox */
 input[type="checkbox"].kitty {
   appearance: none;
   -webkit-appearance: none;
@@ -188,8 +188,8 @@ a {
 .tabs-scroll {
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
-  /* 가로 스크롤이 더 있다는 걸 알려주는 오른쪽 끝 페이드. 스크롤 위치와 무관하게 항상
-     보이는 단순한 정적 힌트로, JS 없이 "더 있을 수 있다"는 신호만 준다. */
+  /* Fade on the right edge hinting that the row scrolls horizontally. It's a static hint
+     that is always visible regardless of scroll position, with no JS. */
   mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
   -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
 }

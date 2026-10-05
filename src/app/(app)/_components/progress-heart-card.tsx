@@ -19,9 +19,9 @@ export function ProgressHeartCard({
   return (
     <StickerCard rotate={-1.2} tape={tape}>
       <h1 className="font-display text-[23px] font-semibold leading-tight text-primary">
-        좋은 아침이에요, {name}님
+        Hi, {name}!
       </h1>
-      <p className="mb-3.5 mt-1.5 text-[13px] text-muted">오늘도 부담 없이, 계획한 만큼만 해봐요.</p>
+      <p className="mb-3.5 mt-1.5 text-[13px] text-muted">No pressure today. Just do what you planned.</p>
       <div className="flex items-center gap-3">
         <span className="font-display text-[34px] font-semibold leading-none tabular-nums text-primary">
           {pct}%
@@ -38,7 +38,7 @@ export function ProgressHeartCard({
             ))}
           </div>
           <p className="mt-1 text-[11.5px] tabular-nums text-muted">
-            {total}개 중 {done}개 완료 · {cheer}
+            {done} of {total} done · {cheer}
           </p>
         </div>
       </div>

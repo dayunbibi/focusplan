@@ -22,26 +22,26 @@ export function TasksView({
   assignments: AssignmentVM[];
   exams: ExamVM[];
 }) {
-  const [filter, setFilter] = useState("전체");
-  const filters = ["전체", "오늘", ...courses.map((course) => course.name)];
+  const [filter, setFilter] = useState("All");
+  const filters = ["All", "Today", ...courses.map((course) => course.name)];
 
   const done = tasks.filter((t) => t.done).length;
   const left = tasks.length - done;
   const visible =
-    filter === "전체"
+    filter === "All"
       ? tasks
-      : filter === "오늘"
+      : filter === "Today"
         ? tasks.filter((task) => task.dueAt && new Date(task.dueAt).toDateString() === new Date().toDateString())
         : tasks.filter((task) => task.course === filter);
-  const filterTitle = filter === "전체" ? "전체 할 일" : filter;
+  const filterTitle = filter === "All" ? "All tasks" : filter;
 
   return (
     <div>
       <StickerCard rotate={-1} tape="TO · DO">
         <h1 className="font-display text-[22px] font-semibold text-primary">
-          할 일 {done}/{tasks.length}
+          Tasks {done}/{tasks.length}
         </h1>
-        <p className="mt-1.5 text-[12.5px] text-muted">남은 건 {left}개예요. 과목별로 걸러볼 수 있어요.</p>
+        <p className="mt-1.5 text-[12.5px] text-muted">{left} left. Filter by course to focus.</p>
       </StickerCard>
 
       <div className="tabs-scroll -mx-4 mt-4 flex gap-[7px] overflow-x-auto px-4 pb-1">
@@ -71,8 +71,8 @@ export function TasksView({
       ) : (
         <div className="mt-2.5 rounded-[22px] border-2 border-dashed border-border px-5 py-9 text-center">
           <Mascot size={70} muted className="mx-auto" />
-          <p className="mt-3 font-display text-base font-semibold text-muted">여긴 아직 비어 있어요</p>
-          <p className="mt-1.5 text-[12.5px] text-muted">＋ 버튼으로 첫 할 일을 추가해봐요.</p>
+          <p className="mt-3 font-display text-base font-semibold text-muted">Nothing here yet</p>
+          <p className="mt-1.5 text-[12.5px] text-muted">Tap ＋ to add your first task.</p>
         </div>
       )}
 

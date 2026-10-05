@@ -18,7 +18,7 @@ export function AppShell({
         href="#main-content"
         className="absolute left-4 top-2 z-50 -translate-y-16 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0"
       >
-        본문으로 건너뛰기
+        Skip to main content
       </a>
 
       <header className="flex-none border-b-2 border-dashed border-border bg-background/85 pt-[env(safe-area-inset-top)] backdrop-blur">
@@ -28,18 +28,18 @@ export function AppShell({
             <span className="font-display text-[17px] font-semibold text-primary">FocusPlan</span>
           </span>
           <div className="flex items-center gap-1.5">
-            {/* 알림 기능은 아직 없음(수신 로직 없음). 실제 알림을 붙이기 전까지는
-                설정으로 잘못 연결하는 대신 비활성 표시만 해둔다. */}
+            {/* Notifications aren't built yet (nothing delivers them), so the bell is shown
+                as disabled instead of linking somewhere misleading. */}
             <span
               className="grid size-11 place-items-center rounded-full border-2 border-border bg-surface text-muted/50"
-              title="알림 기능은 준비 중이에요"
-              aria-label="알림 기능은 아직 준비 중이에요"
+              title="Notifications are coming soon"
+              aria-label="Notifications are coming soon"
             >
               <Bell size={18} strokeWidth={1.8} aria-hidden="true" />
             </span>
             <Link
               href="/settings"
-              aria-label="설정 열기"
+              aria-label="Open settings"
               className="grid size-11 place-items-center rounded-full border-2 border-border bg-surface-soft font-display text-sm font-semibold text-primary"
             >
               {userInitial}

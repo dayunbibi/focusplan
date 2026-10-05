@@ -3,7 +3,7 @@ import { CalendarView } from "../_components/calendar-view";
 import { requireCurrentUser } from "@/lib/dal/auth";
 import { getCalendarMonth } from "../_lib/queries";
 
-export const metadata: Metadata = { title: "캘린더" };
+export const metadata: Metadata = { title: "Calendar" };
 
 export default async function CalendarPage({ searchParams }: { searchParams: Promise<{ year?: string; month?: string }> }) {
   const params = await searchParams;

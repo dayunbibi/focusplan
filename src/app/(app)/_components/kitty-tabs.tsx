@@ -13,11 +13,11 @@ import {
 } from "lucide-react";
 
 const tabs: { label: string; href: string; icon: LucideIcon; rotate: number }[] = [
-  { label: "투데이", href: "/", icon: LayoutDashboard, rotate: -1.5 },
-  { label: "할 일", href: "/tasks", icon: ListTodo, rotate: 0.8 },
-  { label: "시간표", href: "/timetable", icon: Table2, rotate: -0.6 },
-  { label: "공부", href: "/study-planner", icon: BookOpenCheck, rotate: 1 },
-  { label: "캘린더", href: "/calendar", icon: CalendarDays, rotate: 0 },
+  { label: "Today", href: "/", icon: LayoutDashboard, rotate: -1.5 },
+  { label: "Tasks", href: "/tasks", icon: ListTodo, rotate: 0.8 },
+  { label: "Timetable", href: "/timetable", icon: Table2, rotate: -0.6 },
+  { label: "Study", href: "/study-planner", icon: BookOpenCheck, rotate: 1 },
+  { label: "Calendar", href: "/calendar", icon: CalendarDays, rotate: 0 },
 ];
 
 const isActive = (pathname: string, href: string) =>
@@ -32,7 +32,7 @@ export function KittyTabs() {
   }, [pathname]);
 
   return (
-    <nav aria-label="플래너 메뉴" className="tabs-scroll flex gap-[7px] overflow-x-auto px-2.5 pt-2.5">
+    <nav aria-label="Planner menu" className="tabs-scroll flex gap-[7px] overflow-x-auto px-2.5 pt-2.5">
       {tabs.map(({ label, href, icon: Icon, rotate }) => {
         const active = isActive(pathname, href);
         return (

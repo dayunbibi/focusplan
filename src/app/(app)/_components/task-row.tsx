@@ -10,7 +10,7 @@ import { useTimezone } from "../_lib/ui-store";
 const rotate = (i: number) => (i % 3 === 0 ? "-0.7deg" : i % 3 === 1 ? "0.6deg" : "-0.4deg");
 
 const badgeClass = (priority: TaskVM["priority"]) =>
-  priority === "높음" ? "text-primary" : priority === "보통" ? "text-now" : "";
+  priority === "High" ? "text-primary" : priority === "Medium" ? "text-now" : "";
 
 const fieldClass = "min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary";
 
@@ -57,7 +57,7 @@ export function TaskRow({
   });
 
   const remove = () => {
-    if (!window.confirm(`“${task.title}” 할 일을 삭제할까요?`)) return;
+    if (!window.confirm(`Delete the task “${task.title}”?`)) return;
     start(async () => {
       const result = await deleteTask(task.id);
       if (!result.ok) setError(result.error);
@@ -79,17 +79,17 @@ export function TaskRow({
     return (
       <div className="rounded-[18px] border-2 border-primary bg-surface p-3.5 shadow-[0_2px_6px_rgba(255,127,178,0.14)]">
         <div className="flex flex-col gap-2.5">
-          <label className="text-[11.5px] font-extrabold text-muted">제목<input value={title} onChange={(event) => setTitle(event.target.value)} className={`${fieldClass} mt-1`} /></label>
-          <label className="text-[11.5px] font-extrabold text-muted">메모<input value={notes} onChange={(event) => setNotes(event.target.value)} className={`${fieldClass} mt-1`} /></label>
+          <label className="text-[11.5px] font-extrabold text-muted">Title<input value={title} onChange={(event) => setTitle(event.target.value)} className={`${fieldClass} mt-1`} /></label>
+          <label className="text-[11.5px] font-extrabold text-muted">Notes<input value={notes} onChange={(event) => setNotes(event.target.value)} className={`${fieldClass} mt-1`} /></label>
           <div className="grid grid-cols-2 gap-2">
-            <label className="text-[11.5px] font-extrabold text-muted">과목<select value={courseId} onChange={(event) => setCourseId(event.target.value)} className={`${fieldClass} mt-1`}><option value="">없음</option>{courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}</select></label>
-            <label className="text-[11.5px] font-extrabold text-muted">우선순위<select value={priority} onChange={(event) => setPriority(event.target.value as TaskVM["priorityValue"])} className={`${fieldClass} mt-1`}><option value="HIGH">높음</option><option value="MEDIUM">보통</option><option value="LOW">낮음</option></select></label>
+            <label className="text-[11.5px] font-extrabold text-muted">Course<select value={courseId} onChange={(event) => setCourseId(event.target.value)} className={`${fieldClass} mt-1`}><option value="">None</option>{courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}</select></label>
+            <label className="text-[11.5px] font-extrabold text-muted">Priority<select value={priority} onChange={(event) => setPriority(event.target.value as TaskVM["priorityValue"])} className={`${fieldClass} mt-1`}><option value="HIGH">High</option><option value="MEDIUM">Medium</option><option value="LOW">Low</option></select></label>
           </div>
-          <label className="text-[11.5px] font-extrabold text-muted">마감<input type="datetime-local" value={dueAt} onChange={(event) => setDueAt(event.target.value)} className={`${fieldClass} mt-1`} /></label>
+          <label className="text-[11.5px] font-extrabold text-muted">Due<input type="datetime-local" value={dueAt} onChange={(event) => setDueAt(event.target.value)} className={`${fieldClass} mt-1`} /></label>
           {error && <p role="alert" className="text-xs font-bold text-now">{error}</p>}
           <div className="flex justify-end gap-2">
-            <button type="button" onClick={() => setEditing(false)} className="grid size-11 place-items-center rounded-full border-2 border-border text-muted" aria-label="편집 취소"><X size={16} aria-hidden="true" /></button>
-            <button type="button" onClick={save} disabled={pending || !title.trim()} className="flex min-h-11 items-center gap-1.5 rounded-full border-2 border-primary bg-primary px-4 text-xs font-bold text-white disabled:opacity-50"><Save size={15} aria-hidden="true" />저장</button>
+            <button type="button" onClick={() => setEditing(false)} className="grid size-11 place-items-center rounded-full border-2 border-border text-muted" aria-label="Cancel editing"><X size={16} aria-hidden="true" /></button>
+            <button type="button" onClick={save} disabled={pending || !title.trim()} className="flex min-h-11 items-center gap-1.5 rounded-full border-2 border-primary bg-primary px-4 text-xs font-bold text-white disabled:opacity-50"><Save size={15} aria-hidden="true" />Save</button>
           </div>
         </div>
       </div>
@@ -107,7 +107,7 @@ export function TaskRow({
         checked={task.done}
         disabled={pending}
         onChange={onToggle}
-        aria-label={`${task.title} 완료 표시`}
+        aria-label={`Mark ${task.title} as done`}
       />
       <span className="min-w-0 flex-1">
         <span className={`block text-sm font-bold ${task.done ? "text-muted line-through" : "text-foreground"}`}>
@@ -124,8 +124,8 @@ export function TaskRow({
       </span>
       {editable && (
         <span className="flex shrink-0 gap-1">
-          <button type="button" onClick={(event) => { event.preventDefault(); setEditing(true); }} className="grid size-11 place-items-center rounded-full text-muted hover:bg-surface-soft" aria-label={`${task.title} 편집`}><Pencil size={15} aria-hidden="true" /></button>
-          <button type="button" onClick={(event) => { event.preventDefault(); remove(); }} disabled={pending} className="grid size-11 place-items-center rounded-full text-now hover:bg-surface-soft disabled:opacity-50" aria-label={`${task.title} 삭제`}><Trash2 size={15} aria-hidden="true" /></button>
+          <button type="button" onClick={(event) => { event.preventDefault(); setEditing(true); }} className="grid size-11 place-items-center rounded-full text-muted hover:bg-surface-soft" aria-label={`Edit ${task.title}`}><Pencil size={15} aria-hidden="true" /></button>
+          <button type="button" onClick={(event) => { event.preventDefault(); remove(); }} disabled={pending} className="grid size-11 place-items-center rounded-full text-now hover:bg-surface-soft disabled:opacity-50" aria-label={`Delete ${task.title}`}><Trash2 size={15} aria-hidden="true" /></button>
         </span>
       )}
       {error && !editing && <span role="alert" className="sr-only">{error}</span>}

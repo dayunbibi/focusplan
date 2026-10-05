@@ -1,4 +1,4 @@
-/** 축소 팔레트 톤 매핑. 배경은 항상 surface-soft, 구분은 border/text/dot 색으로만. */
+/** Tone mapping for the reduced palette. The background is always surface-soft; tones differ only by border, text, and dot colors. */
 export const toneClass = {
   primary: { border: "border-primary", text: "text-primary", dot: "bg-primary" },
   now: { border: "border-now", text: "text-now", dot: "bg-now" },

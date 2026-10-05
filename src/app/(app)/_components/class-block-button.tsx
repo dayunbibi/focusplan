@@ -4,7 +4,7 @@ import { useUi } from "../_lib/ui-store";
 import { COURSE_INK } from "../_lib/course-colors";
 import type { ClassGroup } from "./class-card";
 
-/** 시간표 그리드의 색상 블록 — 클릭하면 이 수업의 수정/삭제 바텀시트가 열린다. */
+/** A colored block in the timetable grid. Clicking it opens the edit/delete sheet for that class. */
 export function ClassBlockButton({
   title,
   startTime,
@@ -34,7 +34,7 @@ export function ClassBlockButton({
           defaultColor: group.color,
         })
       }
-      aria-label={`${title} 수정 ${startTime}-${endTime}`}
+      aria-label={`Edit ${title}, ${startTime}-${endTime}`}
       title={`${title} ${startTime}-${endTime}`}
       className="absolute overflow-hidden rounded-[9px] border border-black/10 px-1 py-0.5 text-left text-[9.5px] font-extrabold leading-tight"
     >

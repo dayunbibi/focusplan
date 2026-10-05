@@ -6,7 +6,7 @@ import { deleteClassGroup } from "../_lib/actions";
 import { ClassScheduleForm, type ClassGroupInitial } from "./class-schedule-form";
 import { COURSE_DANGER, COURSE_INK, COURSE_INK_MUTED } from "../_lib/course-colors";
 
-const WEEKDAY_LABEL = ["월", "화", "수", "목", "금", "토", "일"];
+const WEEKDAY_LABEL = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export type ClassGroup = ClassGroupInitial & { key: string };
 
@@ -26,7 +26,7 @@ export function ClassCard({ group, index }: { group: ClassGroup; index: number }
   }
 
   const remove = () => {
-    if (!window.confirm(`“${group.name}” 수업을 삭제할까요? 등록된 시간 ${group.slots.length}개가 모두 삭제돼요.`)) return;
+    if (!window.confirm(`Delete “${group.name}”? All ${group.slots.length} of its time slots will be removed.`)) return;
     start(async () => {
       const result = await deleteClassGroup({ courseId: group.courseId, eventIds: group.eventIds });
       if (!result.ok) setError(result.error);
@@ -46,7 +46,7 @@ export function ClassCard({ group, index }: { group: ClassGroup; index: number }
             onClick={() => setEditing(true)}
             style={{ color: COURSE_INK_MUTED }}
             className="grid size-11 place-items-center rounded-full"
-            aria-label={`${group.name} 편집`}
+            aria-label={`Edit ${group.name}`}
           >
             <Pencil size={15} aria-hidden="true" />
           </button>
@@ -56,7 +56,7 @@ export function ClassCard({ group, index }: { group: ClassGroup; index: number }
             disabled={pending}
             style={{ color: COURSE_DANGER }}
             className="grid size-11 place-items-center rounded-full disabled:opacity-50"
-            aria-label={`${group.name} 삭제`}
+            aria-label={`Delete ${group.name}`}
           >
             <Trash2 size={15} aria-hidden="true" />
           </button>

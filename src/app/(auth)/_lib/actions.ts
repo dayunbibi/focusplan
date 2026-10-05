@@ -12,17 +12,17 @@ export type AuthFormState = {
   errors?: Partial<Record<"name" | "email" | "password" | "passwordConfirm", string[]>>;
 };
 
-const email = z.string().trim().toLowerCase().email("올바른 이메일 주소를 입력하세요.").max(254);
+const email = z.string().trim().toLowerCase().email("Please enter a valid email address.").max(254);
 const password = z
   .string()
-  .min(10, "비밀번호는 10자 이상이어야 해요.")
-  .max(128, "비밀번호는 128자 이하여야 해요.")
-  .regex(/[A-Za-z]/, "영문자를 1개 이상 포함하세요.")
-  .regex(/[0-9]/, "숫자를 1개 이상 포함하세요.");
+  .min(10, "Password must be at least 10 characters.")
+  .max(128, "Password must be 128 characters or fewer.")
+  .regex(/[A-Za-z]/, "Include at least one letter.")
+  .regex(/[0-9]/, "Include at least one number.");
 
 const signupSchema = z
   .object({
-    name: z.string().trim().min(1, "이름을 입력하세요.").max(80, "이름은 80자 이하여야 해요."),
+    name: z.string().trim().min(1, "Please enter your name.").max(80, "Name must be 80 characters or fewer."),
     email,
     password,
     passwordConfirm: z.string(),
@@ -30,17 +30,17 @@ const signupSchema = z
   })
   .refine((value) => value.password === value.passwordConfirm, {
     path: ["passwordConfirm"],
-    message: "비밀번호가 일치하지 않아요.",
+    message: "Passwords don't match.",
   });
 
-const loginSchema = z.object({ email, password: z.string().min(1, "비밀번호를 입력하세요.").max(128) });
+const loginSchema = z.object({ email, password: z.string().min(1, "Please enter your password.").max(128) });
 
 function validTimezone(value: string) {
   try {
-    Intl.DateTimeFormat("ko-KR", { timeZone: value }).format();
+    Intl.DateTimeFormat("en-CA", { timeZone: value }).format();
     return value;
   } catch {
-    return "Asia/Seoul";
+    return "America/Toronto";
   }
 }
 
@@ -50,12 +50,12 @@ export async function signup(_state: AuthFormState, formData: FormData): Promise
     email: formData.get("email"),
     password: formData.get("password"),
     passwordConfirm: formData.get("passwordConfirm"),
-    timezone: formData.get("timezone") || "Asia/Seoul",
+    timezone: formData.get("timezone") || "America/Toronto",
   });
   if (!parsed.success) return { errors: parsed.error.flatten().fieldErrors };
 
   const existing = await prisma.user.findUnique({ where: { email: parsed.data.email }, select: { id: true } });
-  if (existing) return { message: "이미 가입된 이메일이에요. 로그인해 주세요." };
+  if (existing) return { message: "This email is already registered. Please log in." };
 
   const passwordHash = await hashPassword(parsed.data.password);
   let user: { id: string };
@@ -71,7 +71,7 @@ export async function signup(_state: AuthFormState, formData: FormData): Promise
     });
   } catch (error) {
     if (typeof error === "object" && error && "code" in error && error.code === "P2002") {
-      return { message: "이미 가입된 이메일이에요. 로그인해 주세요." };
+      return { message: "This email is already registered. Please log in." };
     }
     throw error;
   }
@@ -91,7 +91,7 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
   const authenticated = user?.passwordHash
     ? await verifyPassword(parsed.data.password, user.passwordHash)
     : false;
-  if (!user || !authenticated) return { message: "이메일 또는 비밀번호가 올바르지 않아요." };
+  if (!user || !authenticated) return { message: "Incorrect email or password." };
 
   await createSession(user.id);
   redirect("/");
@@ -100,7 +100,7 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
 // One-click sign-in for the public demo account created by prisma/seed.ts
 export async function loginDemo(): Promise<AuthFormState> {
   const user = await prisma.user.findUnique({ where: { email: DEMO_EMAIL }, select: { id: true } });
-  if (!user) return { message: "데모 계정이 아직 준비되지 않았어요. npm run db:seed를 먼저 실행하세요." };
+  if (!user) return { message: "The demo account isn't set up yet. Run npm run db:seed first." };
 
   await createSession(user.id);
   redirect("/");

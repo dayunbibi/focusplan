@@ -12,7 +12,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // 디자인 레퍼런스 번들 (프로토타입 코드, 앱 소스 아님)
+    // Design reference bundle (prototype code, not app source)
     "design_handoff_focusplan_mobile/**",
   ]),
 ]);

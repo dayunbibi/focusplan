@@ -5,7 +5,7 @@ import { COURSE_INK, COURSE_PALETTE } from "../_lib/course-colors";
 
 export function ColorSwatchPicker({ value, onChange }: { value: string; onChange: (hex: string) => void }) {
   return (
-    <div className="grid grid-cols-8 gap-1.5" role="radiogroup" aria-label="색상 선택">
+    <div className="grid grid-cols-8 gap-1.5" role="radiogroup" aria-label="Choose a color">
       {COURSE_PALETTE.map((c) => {
         const active = value.toLowerCase() === c.hex.toLowerCase();
         return (

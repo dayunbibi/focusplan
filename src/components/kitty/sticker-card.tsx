@@ -6,7 +6,7 @@ const tones = {
   done: "border-done bg-surface-soft",
 } as const;
 
-/** 스티커처럼 살짝 기울어진 카드. rotate(도 단위)와 tone으로 변형. */
+/** A card tilted slightly like a sticker. Customize with rotate (degrees) and tone. */
 export function StickerCard({
   children,
   tape,

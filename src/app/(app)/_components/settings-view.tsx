@@ -19,9 +19,9 @@ import { logout } from "@/app/(auth)/_lib/actions";
 import type { getSettings } from "../_lib/queries";
 
 const THEMES = [
-  { value: "system", label: "시스템" },
-  { value: "light", label: "라이트" },
-  { value: "dark", label: "다크" },
+  { value: "system", label: "System" },
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
 ];
 
 type SettingsData = Awaited<ReturnType<typeof getSettings>>;
@@ -60,13 +60,13 @@ export function SettingsView({ data }: { data: SettingsData }) {
   const [profileMessage, setProfileMessage] = useState("");
   const [profilePending, startProfile] = useTransition();
 
-  // 브라우저 전용 저장소를 마운트 후 1회 읽어 반영 (SSR 값과 다를 수 있음)
+  // Read browser-only storage once after mount (it may differ from the server-rendered value)
   useEffect(() => {
     try {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTheme(localStorage.getItem("focusplan-theme") || "system");
     } catch {
-      /* 무시 */
+      /* ignore */
     }
   }, []);
 
@@ -76,19 +76,19 @@ export function SettingsView({ data }: { data: SettingsData }) {
       localStorage.setItem("focusplan-theme", value);
       document.documentElement.setAttribute("data-theme", value);
     } catch {
-      /* 무시 */
+      /* ignore */
     }
   };
 
   const academicRows: { icon: LucideIcon; title: string; desc: string }[] = [
-    { icon: GraduationCap, title: "과목 · 시간표", desc: `과목 ${data.courseCount}개 · 수업 ${data.eventCount}개` },
-    { icon: BookOpenCheck, title: "기본 세션 길이", desc: "50분 · 새 공부 계획의 기본값" },
-    { icon: User, title: "시간대", desc: data.timezone },
+    { icon: GraduationCap, title: "Courses & timetable", desc: `${data.courseCount} course${data.courseCount === 1 ? "" : "s"} · ${data.eventCount} class${data.eventCount === 1 ? "" : "es"}` },
+    { icon: BookOpenCheck, title: "Default session length", desc: "50 min · used for new study plans" },
+    { icon: User, title: "Timezone", desc: data.timezone },
   ];
 
   const saveProfile = () => startProfile(async () => {
     const result = await updateProfile({ name, timezone });
-    setProfileMessage(result.ok ? "프로필을 저장했어요." : result.error);
+    setProfileMessage(result.ok ? "Profile saved." : result.error);
   });
 
   return (
@@ -105,17 +105,17 @@ export function SettingsView({ data }: { data: SettingsData }) {
         </div>
       </StickerCard>
 
-      <SectionTitle>프로필</SectionTitle>
+      <SectionTitle>Profile</SectionTitle>
       <div className="rounded-[18px] border-2 border-border bg-surface p-4">
         <div className="flex flex-col gap-2.5">
-          <label className="text-[11.5px] font-extrabold text-muted">이름<input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary" /></label>
-          <label className="text-[11.5px] font-extrabold text-muted">시간대<TimezoneSelect value={timezone} onChange={setTimezone} /></label>
-          {profileMessage && <p aria-live="polite" className={`text-xs font-bold ${profileMessage.includes("저장") ? "text-done" : "text-now"}`}>{profileMessage}</p>}
-          <button type="button" onClick={saveProfile} disabled={profilePending || !name.trim() || !timezone.trim()} className="flex min-h-11 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary text-sm font-bold text-white disabled:opacity-50"><Save size={15} aria-hidden="true" />프로필 저장</button>
+          <label className="text-[11.5px] font-extrabold text-muted">Name<input value={name} onChange={(event) => setName(event.target.value)} className="mt-1 min-h-11 w-full rounded-[12px] border-2 border-border bg-surface px-3 text-sm text-foreground outline-none focus:border-primary" /></label>
+          <label className="text-[11.5px] font-extrabold text-muted">Timezone<TimezoneSelect value={timezone} onChange={setTimezone} /></label>
+          {profileMessage && <p aria-live="polite" className={`text-xs font-bold ${profileMessage === "Profile saved." ? "text-done" : "text-now"}`}>{profileMessage}</p>}
+          <button type="button" onClick={saveProfile} disabled={profilePending || !name.trim() || !timezone.trim()} className="flex min-h-11 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary text-sm font-bold text-white disabled:opacity-50"><Save size={15} aria-hidden="true" />Save profile</button>
         </div>
       </div>
 
-      <SectionTitle>테마</SectionTitle>
+      <SectionTitle>Theme</SectionTitle>
       <div className="flex gap-[7px]">
         {THEMES.map((t) => (
           <button
@@ -133,7 +133,7 @@ export function SettingsView({ data }: { data: SettingsData }) {
         ))}
       </div>
 
-      <SectionTitle>학업</SectionTitle>
+      <SectionTitle>School</SectionTitle>
       <div
         style={{ transform: "rotate(0.6deg)" }}
         className="rounded-[18px] border-2 border-border bg-surface px-4 shadow-[0_2px_6px_rgba(255,127,178,0.14)]"
@@ -150,13 +150,13 @@ export function SettingsView({ data }: { data: SettingsData }) {
         ))}
       </div>
 
-      <SectionTitle count={`${data.courses.length}개`}>과목 관리</SectionTitle>
+      <SectionTitle count={data.courses.length}>Manage courses</SectionTitle>
       <CourseManager courses={data.courses} />
 
       <form action={logout} className="mt-5">
         <button type="submit" className="flex min-h-11 w-full items-center justify-center gap-2 rounded-full border-2 border-border bg-surface text-sm font-bold text-primary-strong">
           <LogOut size={16} aria-hidden="true" />
-          로그아웃
+          Log out
         </button>
       </form>
 

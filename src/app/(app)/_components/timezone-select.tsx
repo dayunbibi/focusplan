@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-// 개인용 앱이라 한국·캐나다 시간대만 지원한다. IANA 문자열은 화면에 노출하지 않는다.
+// Only a short list of Canadian zones (plus Seoul) is offered. IANA strings are never shown in the UI.
 const TIMEZONES = [
   { label: "Toronto", tz: "America/Toronto" },
   { label: "Vancouver", tz: "America/Vancouver" },
@@ -20,7 +20,7 @@ export function TimezoneSelect({ value, onChange }: { value: string; onChange: (
       const match = TIMEZONES.find((t) => t.tz === browserTz);
       if (match) onChange(match.tz);
     } catch {
-      /* 무시 */
+      /* ignore */
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isKnown]);

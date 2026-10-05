@@ -1,5 +1,5 @@
-/** 리본 고양이 마스코트. fill/stroke가 모두 토큰이라 다크 모드에 자동 대응.
- *  muted: 빈 상태용 회색 버전 (수염·리본·코 생략). */
+/** Ribbon cat mascot. Fill and stroke use theme tokens, so it adapts to dark mode.
+ *  muted: a grey version for empty states (no whiskers, ribbon, or nose). */
 export function Mascot({
   size = 52,
   muted = false,

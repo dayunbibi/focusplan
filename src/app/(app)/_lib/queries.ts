@@ -26,7 +26,7 @@ export type TaskVM = {
   due: string;
   dueAt: string | null;
   done: boolean;
-  priority: "높음" | "보통" | null;
+  priority: "High" | "Medium" | null;
   priorityValue: "LOW" | "MEDIUM" | "HIGH";
 };
 
@@ -38,7 +38,7 @@ export type CourseVM = {
   location: string | null;
 };
 
-const PRIORITY_KO: Record<string, "높음" | "보통" | null> = { HIGH: "높음", MEDIUM: "보통", LOW: null };
+const PRIORITY_LABELS: Record<string, "High" | "Medium" | null> = { HIGH: "High", MEDIUM: "Medium", LOW: null };
 
 export async function getCourses() {
   const user = await requireCurrentUser();
@@ -64,7 +64,7 @@ function toTaskVM(t: {
     due: formatDue(t.dueAt, timeZone),
     dueAt: t.dueAt?.toISOString() ?? null,
     done: t.completedAt != null,
-    priority: PRIORITY_KO[t.priority] ?? null,
+    priority: PRIORITY_LABELS[t.priority] ?? null,
     priorityValue: t.priority as TaskVM["priorityValue"],
   };
 }
@@ -161,7 +161,7 @@ export async function getUpcoming() {
   const items = [
     ...assignments.map((a) => ({
       id: a.id,
-      type: "과제" as const,
+      type: "Assignment" as const,
       title: a.title,
       course: a.course?.name ?? "",
       date: formatMonthDay(a.dueAt, user.timezone),
@@ -169,7 +169,7 @@ export async function getUpcoming() {
     })),
     ...exams.map((e) => ({
       id: e.id,
-      type: "시험" as const,
+      type: "Exam" as const,
       title: e.title,
       course: e.course?.name ?? "",
       date: formatMonthDay(e.examAt, user.timezone),
@@ -193,7 +193,7 @@ export async function getDashboard() {
   const total = classes.length + tasks.length + sessions.length;
   const pct = total ? Math.round((done / total) * 100) : 0;
   const cheer =
-    total > 0 && done >= total ? "오늘 계획 다 했어요!" : pct >= 60 ? "좋은 흐름이에요" : "천천히 시작해봐요";
+    total > 0 && done >= total ? "All done for today!" : pct >= 60 ? "You're on a roll" : "Take it one step at a time";
   return {
     classes,
     tasks,
@@ -248,11 +248,11 @@ export async function getTasksScreen() {
       date: formatMonthDay(item.examAt, user.timezone),
       daysLeft: dday(item.examAt, user.timezone),
     })),
-    upcomingAssignments: upcoming.filter((i) => i.type === "과제"),
+    upcomingAssignments: upcoming.filter((i) => i.type === "Assignment"),
   };
 }
 
-const WEEKDAY_LABELS = ["월", "화", "수", "목", "금"];
+const WEEKDAY_LABELS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
 export async function getTimetable() {
   const user = await requireCurrentUser();
@@ -318,7 +318,7 @@ export async function getStudyPlan() {
   ]);
   const byCourse = new Map<string, number>();
   for (const s of weekSessions) {
-    const key = s.course?.name ?? "기타";
+    const key = s.course?.name ?? "Other";
     byCourse.set(key, (byCourse.get(key) ?? 0) + s.durationMin);
   }
   const totalMin = [...byCourse.values()].reduce((a, b) => a + b, 0);
@@ -389,7 +389,7 @@ export async function getCalendarMonth(year: number, month1: number) {
   ]);
 
   const daysInMonth = new Date(year, month1, 0).getDate();
-  const leadingBlanks = new Date(Date.UTC(year, month1 - 1, 1)).getUTCDay(); // 0=일
+  const leadingBlanks = new Date(Date.UTC(year, month1 - 1, 1)).getUTCDay(); // 0 = Sun
 
   const days: CalendarDay[] = [];
   for (let day = 1; day <= daysInMonth; day++) {
@@ -404,21 +404,21 @@ export async function getCalendarMonth(year: number, month1: number) {
       events.push({
         time: t.startTime,
         title: t.course?.name ?? t.title,
-        meta: `수업 · ${t.location ?? t.course?.location ?? ""}`.trim().replace(/·\s*$/, "").trim(),
+        meta: `Class · ${t.location ?? t.course?.location ?? ""}`.trim().replace(/·\s*$/, "").trim(),
         tone: "primary",
       });
     }
     for (const a of assignments.filter((item) => dateKey(item.dueAt, user.timezone) === key)) {
-      events.push({ time: hhmm(a.dueAt, user.timezone), title: a.title, meta: `과제 마감 · ${a.course?.name ?? ""}`, tone: "now" });
+      events.push({ time: hhmm(a.dueAt, user.timezone), title: a.title, meta: `Assignment due · ${a.course?.name ?? ""}`, tone: "now" });
     }
     for (const e of exams.filter((item) => dateKey(item.examAt, user.timezone) === key)) {
-      events.push({ time: hhmm(e.examAt, user.timezone), title: e.title, meta: `시험 · ${e.course?.name ?? ""}`, tone: "now" });
+      events.push({ time: hhmm(e.examAt, user.timezone), title: e.title, meta: `Exam · ${e.course?.name ?? ""}`, tone: "now" });
     }
     for (const s of sessions.filter((item) => dateKey(item.plannedAt, user.timezone) === key)) {
       events.push({
         time: hhmm(s.plannedAt, user.timezone),
         title: s.title,
-        meta: `공부 ${s.durationMin}분 · ${s.course?.name ?? ""}`,
+        meta: `Study ${s.durationMin} min · ${s.course?.name ?? ""}`,
         tone: s.completedAt ? "done" : "muted",
       });
     }
@@ -438,7 +438,7 @@ export async function getCalendarMonth(year: number, month1: number) {
   return {
     year,
     month1,
-    monthLabel: `${month1}월 ${year}`,
+    monthLabel: new Intl.DateTimeFormat("en-CA", { month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(Date.UTC(year, month1 - 1, 1))),
     leadingBlanks,
     days,
     selectedDefault,
@@ -452,7 +452,7 @@ export async function getSettings() {
     prisma.timetableEvent.count({ where: { userId: user.id } }),
   ]);
   return {
-    name: user.name ?? "학생",
+    name: user.name ?? "Student",
     email: user.email,
     timezone: user.timezone,
     initial: (user.name ?? user.email).trim().charAt(0).toUpperCase(),

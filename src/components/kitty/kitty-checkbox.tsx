@@ -1,5 +1,5 @@
-/** 하트 체크박스 + 라벨. 체크 시 라벨은 --muted + 취소선 (globals.css).
- *  부모 label min-height 56px로 최소 탭 타깃 확보. 상태/핸들러는 호출부에서 전달. */
+/** Heart checkbox with a label. When checked, the label turns --muted with a strike-through (globals.css).
+ *  The parent label's 56px min-height keeps the tap target large enough. State and handlers come from the caller. */
 export function KittyCheckbox({
   label,
   className = "",

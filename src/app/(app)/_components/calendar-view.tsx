@@ -8,7 +8,14 @@ import { SectionTitle } from "./section-title";
 import { toneClass } from "../_lib/kitty-tones";
 import type { getCalendarMonth } from "../_lib/queries";
 
-const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+function dayLabel(year: number, month1: number, day: number) {
+  return new Intl.DateTimeFormat("en-CA", { weekday: "short", month: "long", day: "numeric", timeZone: "UTC" }).format(
+    new Date(Date.UTC(year, month1 - 1, day)),
+  );
+}
 const markColor = { primary: "bg-primary", now: "bg-now" } as const;
 
 type CalendarData = Awaited<ReturnType<typeof getCalendarMonth>>;
@@ -25,13 +32,13 @@ export function CalendarView({ data }: { data: CalendarData }) {
 
   return (
     <div>
-      <StickerCard rotate={-0.8} tape={`${data.month1}월`} className="px-4">
+      <StickerCard rotate={-0.8} tape={MONTHS[data.month1 - 1]} className="px-4">
         <div className="flex items-center justify-between">
-          <Link href={adjacentMonth(data.year, data.month1, -1)} aria-label="이전 달" className="grid size-11 place-items-center rounded-full border-2 border-border text-muted">
+          <Link href={adjacentMonth(data.year, data.month1, -1)} aria-label="Previous month" className="grid size-11 place-items-center rounded-full border-2 border-border text-muted">
             <ChevronLeft size={16} strokeWidth={2.2} aria-hidden="true" />
           </Link>
           <h1 className="font-display text-[20px] font-semibold text-primary-strong">{data.monthLabel}</h1>
-          <Link href={adjacentMonth(data.year, data.month1, 1)} aria-label="다음 달" className="grid size-11 place-items-center rounded-full border-2 border-primary bg-surface-soft text-primary-strong">
+          <Link href={adjacentMonth(data.year, data.month1, 1)} aria-label="Next month" className="grid size-11 place-items-center rounded-full border-2 border-primary bg-surface-soft text-primary-strong">
             <ChevronRight size={16} strokeWidth={2.2} aria-hidden="true" />
           </Link>
         </div>
@@ -77,18 +84,18 @@ export function CalendarView({ data }: { data: CalendarData }) {
         <div className="mt-3 flex flex-wrap gap-3 border-t-2 border-dashed border-border pt-2.5 text-[10.5px] font-bold text-muted">
           <span className="flex items-center gap-1.5">
             <span className="size-[7px] rounded-full bg-primary" />
-            수업
+            Class
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-[7px] rounded-full bg-now" />
-            과제·시험
+            Due / Exam
           </span>
-          <span className="flex items-center gap-1.5"><span className="size-[7px] rounded-full bg-done" />공부 완료</span>
+          <span className="flex items-center gap-1.5"><span className="size-[7px] rounded-full bg-done" />Studied</span>
         </div>
       </StickerCard>
 
-      <SectionTitle count={events.length ? `${events.length}개 일정` : undefined}>
-        {data.month1}월 {day}일
+      <SectionTitle count={events.length ? `${events.length} event${events.length === 1 ? "" : "s"}` : undefined}>
+        {dayLabel(data.year, data.month1, day)}
       </SectionTitle>
       {events.length ? (
         <div className="flex flex-col gap-2.5">
@@ -116,7 +123,7 @@ export function CalendarView({ data }: { data: CalendarData }) {
         </div>
       ) : (
         <div className="rounded-[18px] border-2 border-dashed border-border px-4 py-6 text-center text-[12.5px] text-muted">
-          이 날은 일정이 없어요. 쉬어도 좋아요!
+          Nothing scheduled. Enjoy the free day!
         </div>
       )}
     </div>

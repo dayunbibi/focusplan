@@ -18,7 +18,7 @@ type PillOptions = {
   className?: string;
 };
 
-/** 알약(버튼/칩/탭) 클래스. Link 등엔 이 함수로 클래스만 가져다 씀. */
+/** Pill classes for buttons, chips, and tabs. Use this function to style a Link or other element. */
 export function pillClass({ variant = "outline", size = "md", selected = false, className = "" }: PillOptions = {}) {
   return `inline-flex items-center justify-center gap-1.5 rounded-full border-2 font-display font-semibold transition-transform hover:-translate-y-px ${
     selected ? variants.primary : variants[variant]

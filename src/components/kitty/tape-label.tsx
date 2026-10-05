@@ -1,4 +1,4 @@
-/** 마스킹테이프 라벨 — 점선 테두리 알약. */
+/** Masking-tape label: a pill with a dashed border. */
 export function TapeLabel({
   children,
   className = "",

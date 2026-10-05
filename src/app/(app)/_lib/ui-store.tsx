@@ -35,7 +35,7 @@ export function useUi() {
   return ctx;
 }
 
-/** 로그인한 사용자의 저장된 IANA 타임존. 모든 날짜 입력·표시 변환의 기준. */
+/** The signed-in user's saved IANA timezone, used for every date input and display. */
 export function useTimezone() {
   return useUi().timezone;
 }

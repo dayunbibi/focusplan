@@ -23,14 +23,13 @@ The demo account is shared and filled with sample data (courses, a weekly timeta
 - **Today**: the day at a glance with today's classes, tasks, and study sessions, a progress tracker, and a focus timer for the next session
 - **Timetable**: a weekly class grid with color-coded courses and multiple time slots per course
 - **Calendar**: a month view that combines classes, assignment deadlines, exams, and study sessions
-- **Tasks**: to-dos with priorities and due dates, filterable by course, plus assignments and exams with D-day countdowns
+- **Tasks**: to-dos with priorities and due dates, filterable by course, plus assignments and exams with due-date countdowns
 - **Study Planner**: plan and complete study sessions, see weekly study time per course, and auto-generate a 7-day plan that fills free slots before upcoming deadlines (rule-based)
 - **Settings**: profile, timezone, course management, and light/dark theme
 - **Accounts**: email and password sign-up with scrypt-hashed passwords and HTTP-only session cookies; every query is scoped to the signed-in user
 - **Timezone-aware**: dates and times follow each user's IANA timezone, including DST changes
 - **Installable**: PWA manifest and home-screen icons
 
-The UI is in Korean.
 
 ## Tech Stack
 

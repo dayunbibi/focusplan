@@ -12,7 +12,7 @@ model User {
   email           String           @unique
   passwordHash    String?
   name            String?
-  timezone        String           @default("Asia/Seoul")
+  timezone        String           @default("America/Toronto")
   sessions        Session[]
   courses         Course[]
   timetableEvents TimetableEvent[]

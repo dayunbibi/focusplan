@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { dateKey, isoWeekday, startOfToday, zonedDate } from "../src/app/(app)/_lib/date-utils";
+import {
+  dateKey,
+  daysLeftLabel,
+  formatDue,
+  formatDuration,
+  formatMonthDay,
+  isoWeekday,
+  startOfToday,
+  todayTape,
+  zonedDate,
+} from "../src/app/(app)/_lib/date-utils";
 import { fromDateTimeLocal, toDateTimeLocal } from "../src/app/(app)/_lib/local-datetime";
 
 test("zonedDate resolves wall-clock time using the given IANA zone, not the host offset", () => {
@@ -50,4 +60,21 @@ test("startOfToday / dateKey cross the month boundary in the user's zone", () =>
   assert.equal(start.toISOString(), "2026-02-28T15:00:00.000Z"); // 2026-03-01 00:00 KST
   assert.equal(dateKey(start, "Asia/Seoul"), "2026-03-01");
   assert.equal(isoWeekday(now, "Asia/Seoul"), 7); // Sunday
+});
+
+test("display formatters use en-CA wording", () => {
+  const now = new Date("2026-10-05T14:00:00Z"); // 10:00 in Toronto
+  const laterToday = new Date("2026-10-05T22:00:00Z"); // 18:00 in Toronto
+  const nextWeek = new Date("2026-10-12T14:00:00Z");
+  assert.equal(formatDue(laterToday, "America/Toronto", now), "18:00");
+  assert.equal(formatDue(nextWeek, "America/Toronto", now), "Oct 12");
+  assert.equal(formatDue(null, "America/Toronto", now), "No due date");
+  assert.equal(formatMonthDay(nextWeek, "America/Toronto"), "Oct 12");
+  assert.equal(formatDuration(90), "1h 30m");
+  assert.equal(formatDuration(45), "45m");
+  assert.equal(formatDuration(120), "2h");
+  assert.equal(daysLeftLabel(0), "Today");
+  assert.equal(daysLeftLabel(1), "Tomorrow");
+  assert.equal(daysLeftLabel(5), "5 days");
+  assert.equal(todayTape("America/Toronto", now), "OCT · 5 · MON");
 });

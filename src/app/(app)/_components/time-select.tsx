@@ -5,18 +5,19 @@ import { Check, X } from "lucide-react";
 
 const ITEM_H = 40;
 const PAD = ITEM_H * 2;
-const PERIODS = ["오전", "오후"];
+const PERIODS = ["a.m.", "p.m."];
 const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
 const MINUTES = Array.from({ length: 12 }, (_, i) => String(i * 5).padStart(2, "0"));
 
-function formatKo(hhmm: string) {
+/** "13:30" → "1:30 p.m." (en-CA style) */
+function formatTime12(hhmm: string) {
   const [h, m] = hhmm.split(":").map(Number);
-  const period = h < 12 ? "오전" : "오후";
+  const period = h < 12 ? PERIODS[0] : PERIODS[1];
   const h12 = h % 12 === 0 ? 12 : h % 12;
-  return `${period} ${h12}:${String(m).padStart(2, "0")}`;
+  return `${h12}:${String(m).padStart(2, "0")} ${period}`;
 }
 
-/** 저장된 "HH:mm"을 오전/오후·시(1-12)·분(5분 단위) 휠 인덱스로 분해한다. */
+/** Splits a stored "HH:mm" into wheel indexes: hour (1-12), minute (5-min steps), and a.m./p.m. */
 function decompose(hhmm: string) {
   const [h, m] = hhmm.split(":").map(Number);
   const periodIdx = h >= 12 ? 1 : 0;
@@ -36,7 +37,7 @@ function WheelColumn({ options, selected, onSettle }: { options: string[]; selec
 
   useEffect(() => {
     ref.current?.scrollTo({ top: selected * ITEM_H });
-    // 처음 열릴 때 한 번만 저장된 값 위치로 맞춘다.
+    // Scroll to the stored value once, when the picker first opens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -47,8 +48,8 @@ function WheelColumn({ options, selected, onSettle }: { options: string[]; selec
       const idx = Math.min(Math.max(Math.round(el.scrollTop / ITEM_H), 0), options.length - 1);
       onSettle(idx);
     };
-    // scrollend가 스크롤(네이티브 snap 애니메이션 포함)이 실제로 멈춘 시점을 정확히 알려준다.
-    // 구형 브라우저를 위한 디바운스 fallback도 함께 둔다.
+    // scrollend fires exactly when scrolling (including the native snap animation) stops.
+    // A debounce fallback covers older browsers.
     let fallback: ReturnType<typeof setTimeout>;
     const onScroll = () => {
       clearTimeout(fallback);
@@ -115,16 +116,16 @@ function TimeWheelPicker({ value, onConfirm, onCancel }: { value: string; onConf
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="시간 선택"
+        aria-label="Choose a time"
         className="fixed inset-x-0 bottom-0 z-50 rounded-t-[26px] border-2 border-b-0 border-border bg-surface p-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-14px_34px_rgba(255,127,178,0.24)] [animation:kitty-sheet_.26s_cubic-bezier(.22,1,.36,1)] sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:w-[260px] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[22px] sm:border-b-2 sm:p-3.5 sm:shadow-[0_16px_36px_rgba(255,127,178,0.28)] sm:[animation:kitty-rise_.18s_ease]"
       >
         <span className="mx-auto mb-3 block h-[5px] w-11 rounded-full bg-border sm:hidden" aria-hidden="true" />
         <div className="relative">
           <div className="pointer-events-none absolute inset-x-0 top-1/2 z-0 h-10 -translate-y-1/2 rounded-[12px] border-2 border-primary bg-surface-soft/70" aria-hidden="true" />
           <div className="relative z-10 mx-auto grid w-[210px] grid-cols-3 gap-1">
-            <WheelColumn options={PERIODS} selected={periodIdx} onSettle={setPeriodIdx} />
             <WheelColumn options={HOURS} selected={hourIdx} onSettle={setHourIdx} />
             <WheelColumn options={MINUTES} selected={minuteIdx} onSettle={setMinuteIdx} />
+            <WheelColumn options={PERIODS} selected={periodIdx} onSettle={setPeriodIdx} />
           </div>
         </div>
         <div className="mt-4 flex gap-2.5">
@@ -134,7 +135,7 @@ function TimeWheelPicker({ value, onConfirm, onCancel }: { value: string; onConf
             className="flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-border bg-surface font-display text-sm font-semibold text-muted"
           >
             <X size={15} aria-hidden="true" />
-            취소
+            Cancel
           </button>
           <button
             type="button"
@@ -142,7 +143,7 @@ function TimeWheelPicker({ value, onConfirm, onCancel }: { value: string; onConf
             className="flex min-h-[46px] flex-1 items-center justify-center gap-1.5 rounded-full border-2 border-primary bg-primary font-display text-sm font-semibold text-white"
           >
             <Check size={15} aria-hidden="true" />
-            완료
+            Done
           </button>
         </div>
       </div>
@@ -169,7 +170,7 @@ export function TimeSelect({
         onClick={() => setOpen(true)}
         className="flex min-h-11 w-full items-center justify-center rounded-[12px] border-2 border-border bg-surface px-2.5 text-sm font-bold tabular-nums text-foreground outline-none focus:border-primary"
       >
-        {formatKo(value)}
+        {formatTime12(value)}
       </button>
       {open && (
         <TimeWheelPicker

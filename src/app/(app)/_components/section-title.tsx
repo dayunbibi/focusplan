@@ -1,4 +1,4 @@
-/** "fpt" 섹션 헤딩 — 제목 + 선택적 카운트. */
+/** "fpt" section heading: a title with an optional count. */
 export function SectionTitle({
   children,
   count,

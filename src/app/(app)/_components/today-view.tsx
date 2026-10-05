@@ -5,6 +5,7 @@ import { StickerCard } from "@/components/kitty/sticker-card";
 import { ProgressHeartCard } from "./progress-heart-card";
 import { SectionTitle } from "./section-title";
 import { TaskRow } from "./task-row";
+import { daysLeftLabel } from "../_lib/date-utils";
 import { toneClass } from "../_lib/kitty-tones";
 import { useUi } from "../_lib/ui-store";
 import type { getDashboard } from "../_lib/queries";
@@ -28,10 +29,10 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
 
       {focus ? (
         <StickerCard rotate={0.9} tone="now" className="mt-[18px]">
-          <p className="text-[10.5px] font-extrabold tracking-[0.12em] text-now">지금 가장 중요한 것</p>
+          <p className="text-[10.5px] font-extrabold tracking-[0.12em] text-now">UP NEXT</p>
           <p className="mt-1.5 font-display text-[17px] font-semibold leading-tight">{focus.title}</p>
           <p className="mb-3 mt-1.5 text-[12.5px] text-now">
-            {focus.time} · {focus.durationMin}분 집중 세션
+            {focus.time} · {focus.durationMin}-min focus session
           </p>
           <button
             type="button"
@@ -41,22 +42,22 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
             className="flex min-h-10 items-center gap-1.5 rounded-full border-2 border-now bg-surface px-4 font-display text-[13px] font-semibold text-now"
           >
             <Play size={14} strokeWidth={2} aria-hidden="true" />
-            타이머 시작
+            Start timer
           </button>
         </StickerCard>
       ) : sessions.length > 0 ? (
         <StickerCard rotate={0.9} className="mt-[18px]">
-          <p className="text-[13px] font-bold text-primary">오늘 공부 세션을 다 끝냈어요 🎉</p>
-          <p className="mt-1.5 text-[12.5px] text-muted">공부 계획에서 새 세션을 추가할 수 있어요.</p>
+          <p className="text-[13px] font-bold text-primary">All of today’s study sessions are done 🎉</p>
+          <p className="mt-1.5 text-[12.5px] text-muted">You can add another session in the Study Planner.</p>
         </StickerCard>
       ) : (
         <StickerCard rotate={0.9} className="mt-[18px]">
-          <p className="text-[13px] font-bold text-primary">오늘은 계획된 공부 세션이 없어요</p>
-          <p className="mt-1.5 text-[12.5px] text-muted">공부 계획에서 오늘 세션을 추가해볼까요?</p>
+          <p className="text-[13px] font-bold text-primary">No study sessions planned for today</p>
+          <p className="mt-1.5 text-[12.5px] text-muted">Want to add one in the Study Planner?</p>
         </StickerCard>
       )}
 
-      <SectionTitle count={`${classes.length}개`}>오늘 수업</SectionTitle>
+      <SectionTitle count={classes.length}>Today’s classes</SectionTitle>
       {classes.length ? (
         <div className="tabs-scroll -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1.5">
           {classes.map((c, i) => {
@@ -69,7 +70,7 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
                 className={`w-[152px] flex-none rounded-[18px] border-2 p-3.5 shadow-[0_2px_6px_rgba(255,127,178,0.14)] ${tone.border} ${isNow ? "bg-surface-soft" : "bg-surface"}`}
               >
                 {isNow ? (
-                  <span className="rounded-full bg-now px-2 py-0.5 text-[10px] font-extrabold text-white">지금</span>
+                  <span className="rounded-full bg-now px-2 py-0.5 text-[10px] font-extrabold text-white">Now</span>
                 ) : (
                   <span className={`inline-block size-2.5 rounded-full ${tone.dot}`} />
                 )}
@@ -82,20 +83,20 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
         </div>
       ) : (
         <p className="rounded-[18px] border-2 border-dashed border-border px-4 py-5 text-center text-[12.5px] text-muted">
-          오늘은 수업이 없어요.
+          No classes today.
         </p>
       )}
 
       <div className="mb-2.5 mt-[22px] flex items-baseline justify-between">
         <p className="font-display text-[15px] font-semibold text-primary">
-          오늘 할 일
+          Today’s tasks
           <span className="ml-1.5 font-sans text-xs font-bold text-muted tabular-nums">
             {progress.tasksDone}/{tasks.length}
           </span>
         </p>
         <button type="button" onClick={openSheet} className="flex items-center gap-1 text-xs font-extrabold text-muted">
           <Plus size={14} strokeWidth={2.2} aria-hidden="true" />
-          추가
+          Add
         </button>
       </div>
       {tasks.length ? (
@@ -106,13 +107,13 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
         </div>
       ) : (
         <p className="rounded-[18px] border-2 border-dashed border-border px-4 py-5 text-center text-[12.5px] text-muted">
-          ＋ 버튼으로 첫 할 일을 추가해봐요.
+          Tap ＋ to add your first task.
         </p>
       )}
 
       {sessions.length > 0 && (
         <>
-          <SectionTitle>오늘 공부 계획</SectionTitle>
+          <SectionTitle>Today’s study plan</SectionTitle>
           <div className="flex gap-2.5">
             {sessions.slice(0, 2).map((s, i) => (
               <button
@@ -127,7 +128,7 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
                 <p className="text-[15px] font-extrabold tabular-nums">{s.time}</p>
                 <p className="mt-0.5 text-[12.5px] font-bold">{s.title}</p>
                 <p className="mt-0.5 text-[11px] text-muted">
-                  {s.course} · {s.durationMin}분{s.done ? " · 완료" : ""}
+                  {s.course} · {s.durationMin} min{s.done ? " · Done" : ""}
                 </p>
               </button>
             ))}
@@ -137,7 +138,7 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
 
       {upcoming.length > 0 && (
         <>
-          <SectionTitle>다가오는 일정</SectionTitle>
+          <SectionTitle>Coming up</SectionTitle>
           <div className="flex flex-wrap gap-2">
             {upcoming.map((item) => {
               const urgent = item.daysLeft <= 3;
@@ -149,7 +150,7 @@ export function TodayView({ name, data }: { name: string; data: Dashboard }) {
                   }`}
                 >
                   <strong className={`tabular-nums ${urgent ? "text-now" : "text-primary"}`}>
-                    {item.daysLeft <= 0 ? "D-DAY" : `D-${item.daysLeft}`}
+                    {daysLeftLabel(item.daysLeft)}
                   </strong>
                   {item.title}
                 </span>

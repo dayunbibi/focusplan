@@ -11,16 +11,16 @@ export const metadata: Metadata = {
     default: "FocusPlan",
     template: "%s | FocusPlan",
   },
-  description: "수업부터 공부 계획까지 한곳에서 관리하는 학생용 플래너",
+  description: "A student planner for classes, tasks, exams, and study plans in one place",
 };
 
-// 페인트 전에 저장된 테마를 <html data-theme>에 반영 (없으면 시스템 설정 따름)
+// Apply the saved theme to <html data-theme> before first paint (falls back to the system setting)
 const themeScript = `try{document.documentElement.dataset.theme=localStorage.getItem("focusplan-theme")||"system"}catch(e){}`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="ko"
+      lang="en-CA"
       data-theme="system"
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
