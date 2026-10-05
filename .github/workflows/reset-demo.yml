@@ -1,0 +1,40 @@
+name: Reset demo data
+
+on:
+  schedule:
+    # 08:00 UTC = 4 AM in Toronto during EDT (3 AM during EST)
+    - cron: "0 8 * * *"
+  workflow_dispatch:
+
+# Never run two resets at the same time
+concurrency:
+  group: reset-demo
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      # postinstall runs prisma generate
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Reset demo account
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          # Without the secret, Prisma would fail with a confusing connection error
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE_URL secret is not set (Settings > Secrets and variables > Actions)"
+            exit 1
+          fi
+          npm run db:seed

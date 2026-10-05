@@ -14,7 +14,7 @@ Click **Try demo account** on the login page, or sign in manually:
 | --- | --- |
 | `demo@focusplan.app` | `FocusDemo2026` |
 
-The demo account is shared and filled with sample data (courses, a weekly timetable, tasks, assignments, exams, and study sessions). Running the seed again resets it.
+The demo account is shared and filled with sample data (courses, a weekly timetable, tasks, assignments, exams, and study sessions). It is reset every night, so changes made by visitors don't stick around.
 
 ## Features
 
@@ -101,6 +101,8 @@ If the Neon database is connected through the Vercel Marketplace integration, bo
    ```
 
    Re-run it at any time to reset the demo data.
+
+4. **Daily reset (optional):** `.github/workflows/reset-demo.yml` re-runs the seed every day at about 4 AM Toronto time and can also be started from the **Actions** tab. Add the Neon connection string as a repository secret named `DATABASE_URL`.
 
 ## Project Structure
 
