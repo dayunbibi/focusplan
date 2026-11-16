@@ -21,7 +21,7 @@ export function ProgressHeartCard({
     <StickerCard rotate={0} className="poipi-greeting">
       <p className="poipi-date">{tape}</p>
       <div className="mb-3 flex items-center gap-3">
-        <Image src="/poipi/cheering.webp" width={96} height={96} alt="클로버를 들고 응원하는 포잎이" priority className="poipi-greeting-art" />
+        <Image src="/poipi/cheering-transparent.webp" width={96} height={96} alt="클로버를 들고 응원하는 포잎이" priority className="poipi-greeting-art" />
         <div>
           <p className="text-[9px] font-bold tracking-[.15em] text-muted">
             A FRESH LITTLE START
