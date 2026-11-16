@@ -16,10 +16,10 @@ export function AuthShell({
         <div className="mb-5 flex flex-col items-center text-center">
           <Mascot size={56} />
           <p className="mt-2 font-display text-xl font-semibold text-primary">
-            Poipi Focus
+            포잎이 포커스
           </p>
           <p className="mt-1 text-xs text-muted">
-            Your plans, a little luck, and Poipi.
+            포잎이와 함께, 하루에 작은 행운을 더해요.
           </p>
         </div>
         <StickerCard rotate={-0.5} tape="A LITTLE FOCUS, A LITTLE LUCK">

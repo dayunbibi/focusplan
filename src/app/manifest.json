@@ -1,6 +1,6 @@
 {
-  "name": "Poipi Focus",
-  "short_name": "Poipi Focus",
+  "name": "포잎이 포커스",
+  "short_name": "포잎이 포커스",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf8ef",

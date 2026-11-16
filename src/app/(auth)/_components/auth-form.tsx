@@ -86,7 +86,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </button>
 
         <p className="text-center text-xs font-semibold text-muted">
-          {mode === "login" ? "New to Poipi Focus?" : "Already have an account?"}{" "}
+          {mode === "login" ? "포잎이 포커스가 처음인가요?" : "Already have an account?"}{" "}
           <Link href={mode === "login" ? "/signup" : "/login"} className="inline-flex min-h-11 items-center font-extrabold text-primary-strong underline decoration-border decoration-2 underline-offset-4">
             {mode === "login" ? "Sign up" : "Log in"}
           </Link>
