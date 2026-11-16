@@ -1,5 +1,5 @@
 import { Clover } from "lucide-react";
-import { Mascot } from "@/components/kitty/mascot";
+import Image from "next/image";
 import { StickerCard } from "@/components/kitty/sticker-card";
 
 export function ProgressHeartCard({
@@ -18,9 +18,10 @@ export function ProgressHeartCard({
   tape: string;
 }) {
   return (
-    <StickerCard rotate={0} tape={tape} className="poipi-greeting">
+    <StickerCard rotate={0} className="poipi-greeting">
+      <p className="poipi-date">{tape}</p>
       <div className="mb-3 flex items-center gap-3">
-        <Mascot size={58} />
+        <Image src="/poipi/cheering.webp" width={96} height={96} alt="클로버를 들고 응원하는 포잎이" priority className="poipi-greeting-art" />
         <div>
           <p className="text-[9px] font-bold tracking-[.15em] text-muted">
             A FRESH LITTLE START

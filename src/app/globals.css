@@ -231,3 +231,8 @@ a {
 .poipi-mascot{display:inline-block;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 0 #8b9d4c14)}
 @media(min-width:700px){.poipi-shell{max-width:500px}.poipi-auth{max-width:500px;border-inline:1px solid var(--border);box-shadow:0 0 70px #6c7d3910}}
 @media(prefers-reduced-motion:reduce){.poipi-progress>span{transition:none}}
+
+/* Date stays inside the greeting card so its tape label cannot be clipped. */
+.poipi-date{display:table;margin:0 0 14px auto;border:1px dashed var(--primary);border-radius:7px;background:var(--surface-soft);padding:5px 10px;color:var(--primary);font-size:10px;font-weight:800;line-height:1.5;letter-spacing:1px;max-width:100%;overflow-wrap:anywhere}
+.poipi-greeting-art{width:96px;height:96px;object-fit:contain;border-radius:18px;flex-shrink:0}
+@media(max-width:360px){.poipi-greeting-art{width:80px;height:80px}}
