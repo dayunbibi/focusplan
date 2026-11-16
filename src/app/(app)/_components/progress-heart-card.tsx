@@ -27,7 +27,7 @@ export function ProgressHeartCard({
             A FRESH LITTLE START
           </p>
           <p className="mt-1 text-xs text-primary">
-            포잎이가 응원하고 있어요 🍀
+            A little luck for your day 🍀
           </p>
         </div>
       </div>

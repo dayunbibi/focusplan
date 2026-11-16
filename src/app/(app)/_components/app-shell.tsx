@@ -26,7 +26,7 @@ export function AppShell({
           <span className="flex items-center gap-2.5">
             <Mascot size={30} />
             <span className="poipi-brand font-display text-[17px] font-semibold text-primary">
-              포잎이 포커스<small>A LITTLE FOCUS, A LITTLE LUCK</small>
+              FocusPlan<small>A LITTLE FOCUS, A LITTLE LUCK</small>
             </span>
           </span>
           <div className="flex items-center gap-1.5">

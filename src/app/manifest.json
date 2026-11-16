@@ -1,6 +1,6 @@
 {
-  "name": "포잎이 포커스",
-  "short_name": "포잎이 포커스",
+  "name": "FocusPlan",
+  "short_name": "FocusPlan",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#faf8ef",
