@@ -1,10 +1,10 @@
 {
-  "name": "FocusPlan",
-  "short_name": "FocusPlan",
+  "name": "Poipi Focus",
+  "short_name": "Poipi Focus",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fff5f8",
-  "theme_color": "#f7c6d9",
+  "background_color": "#faf8ef",
+  "theme_color": "#dce9b8",
   "icons": [
     {
       "src": "/icons/icon-192.png",

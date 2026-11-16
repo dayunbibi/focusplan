@@ -80,13 +80,13 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
         {state.message && <p role="alert" className="rounded-xl bg-now-soft px-3 py-2.5 text-sm font-bold text-now-ink">{state.message}</p>}
 
-        <button type="submit" disabled={pending} className="mt-1 flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary px-5 text-sm font-extrabold text-white shadow-[0_3px_8px_rgba(184,63,115,0.2)] disabled:cursor-wait disabled:opacity-60">
+        <button type="submit" disabled={pending} className="mt-1 flex min-h-12 items-center justify-center gap-2 rounded-full border-2 border-primary bg-primary px-5 text-sm font-extrabold text-white shadow-[0_3px_8px_rgba(101,125,65,0.2)] disabled:cursor-wait disabled:opacity-60">
           {mode === "login" ? <LogIn size={17} aria-hidden="true" /> : <UserPlus size={17} aria-hidden="true" />}
           {pending ? "Please wait..." : mode === "login" ? "Log in" : "Create account"}
         </button>
 
         <p className="text-center text-xs font-semibold text-muted">
-          {mode === "login" ? "New to FocusPlan?" : "Already have an account?"}{" "}
+          {mode === "login" ? "New to Poipi Focus?" : "Already have an account?"}{" "}
           <Link href={mode === "login" ? "/signup" : "/login"} className="inline-flex min-h-11 items-center font-extrabold text-primary-strong underline decoration-border decoration-2 underline-offset-4">
             {mode === "login" ? "Sign up" : "Log in"}
           </Link>

@@ -13,7 +13,7 @@ export function AppShell({
   userInitial: string;
 }) {
   return (
-    <div className="relative mx-auto flex h-dvh max-w-[440px] flex-col overflow-hidden">
+    <div className="poipi-shell relative mx-auto flex h-dvh max-w-[440px] flex-col overflow-hidden">
       <a
         href="#main-content"
         className="absolute left-4 top-2 z-50 -translate-y-16 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0"
@@ -25,7 +25,9 @@ export function AppShell({
         <div className="flex h-[58px] items-center justify-between px-4">
           <span className="flex items-center gap-2.5">
             <Mascot size={30} />
-            <span className="font-display text-[17px] font-semibold text-primary">FocusPlan</span>
+            <span className="poipi-brand font-display text-[17px] font-semibold text-primary">
+              Poipi Focus<small>A LITTLE FOCUS, A LITTLE LUCK</small>
+            </span>
           </span>
           <div className="flex items-center gap-1.5">
             {/* Notifications aren't built yet (nothing delivers them), so the bell is shown

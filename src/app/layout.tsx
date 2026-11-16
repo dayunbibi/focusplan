@@ -18,22 +18,22 @@ const shareDescription = `${description}. Try the demo account, no sign-up neede
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "FocusPlan",
-    template: "%s | FocusPlan",
+    default: "Poipi Focus",
+    template: "%s | Poipi Focus",
   },
   description,
   openGraph: {
     type: "website",
     url: "/",
-    siteName: "FocusPlan",
-    title: "FocusPlan",
+    siteName: "Poipi Focus",
+    title: "Poipi Focus",
     description: shareDescription,
     locale: "en_CA",
     images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "FocusPlan Today, Timetable, and Tasks screens" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "FocusPlan",
+    title: "Poipi Focus",
     description: shareDescription,
     images: ["/og-image.png"],
   },

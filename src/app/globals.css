@@ -1,78 +1,78 @@
 @import "tailwindcss";
 
-/* FocusPlan: reduced "Kitty" palette.
+/* FocusPlan: Poipi palette.
  * Backgrounds: --background --surface --surface-soft
  * Text: --foreground (body) --muted (secondary)
  * Accent: --primary (pink) / States: --now (warning, due) --done (completed)
  * --lav is only used for focus rings. Every other color uses the tokens above.
  * --border/--shadow/--radius/--dots/--veil are structural, not part of the palette. */
 :root {
-  --background: #fff4f8;
-  --foreground: #5c3a4b;
-  --surface: #ffffff;
-  --surface-soft: #ffe7f1;
-  --primary: #b83f73;
-  --primary-strong: #873052;
-  --primary-soft: #ffe7f1;
-  --muted: #b47f96;
-  --border: #ffd3e3;
-  --now: #ff9f6b;
-  --done: #2f8b6c;
-  --done-soft: #e3f8f0;
-  --done-ink: #256d56;
-  --now-soft: #fff0e7;
-  --now-ink: #944917;
-  --lav: #b79bec; /* focus rings only */
+  --background: #faf8ef;
+  --foreground: #504632;
+  --surface: #fffef9;
+  --surface-soft: #eef2df;
+  --primary: #657d41;
+  --primary-strong: #4c6632;
+  --primary-soft: #eef2df;
+  --muted: #747b64;
+  --border: #e0e4ce;
+  --now: #cf965d;
+  --done: #6b8d53;
+  --done-soft: #edf3e3;
+  --done-ink: #4d6c3c;
+  --now-soft: #faf0df;
+  --now-ink: #966433;
+  --lav: #9fb879; /* focus rings only */
 
-  --shadow: 0 2px 6px rgba(255, 127, 178, 0.14), 0 14px 34px rgba(255, 127, 178, 0.16);
+  --shadow: 0 2px 6px rgba(107, 132, 68, 0.08), 0 14px 34px rgba(107, 132, 68, 0.08);
   --radius: 22px;
-  --dots: rgba(255, 127, 178, 0.14);
-  --veil: rgba(92, 58, 75, 0.28);
+  --dots: rgba(107, 132, 68, 0.08);
+  --veil: rgba(61, 71, 43, 0.28);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: #2a1622;
-    --foreground: #ffe3ef;
-    --surface: #361d2c;
-    --surface-soft: #45283a;
-    --primary: #e66d9e;
-    --primary-strong: #ffb2d0;
-    --primary-soft: #542b40;
-    --muted: #cd9fb5;
-    --border: #4f2e41;
-    --now: #ffb884;
-    --done: #6ed7b4;
-    --done-soft: #28483f;
-    --done-ink: #9ae8ce;
-    --now-soft: #513524;
-    --now-ink: #ffc49b;
-    --lav: #c3acf3;
+    --background: #22271e;
+    --foreground: #f0eddf;
+    --surface: #2c3326;
+    --surface-soft: #35402c;
+    --primary: #b5ce8c;
+    --primary-strong: #d1e5b2;
+    --primary-soft: #3c4a2e;
+    --muted: #b1b99f;
+    --border: #4a563d;
+    --now: #e1b47c;
+    --done: #b0d18d;
+    --done-soft: #34472b;
+    --done-ink: #c6e5aa;
+    --now-soft: #4b3d2b;
+    --now-ink: #f0c893;
+    --lav: #b9d393;
     --shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.4);
-    --dots: rgba(255, 147, 191, 0.12);
+    --dots: rgba(181, 206, 140, 0.08);
     --veil: rgba(0, 0, 0, 0.5);
   }
 }
 
 :root[data-theme="dark"] {
-  --background: #2a1622;
-  --foreground: #ffe3ef;
-  --surface: #361d2c;
-  --surface-soft: #45283a;
-  --primary: #e66d9e;
-  --primary-strong: #ffb2d0;
-  --primary-soft: #542b40;
-  --muted: #cd9fb5;
-  --border: #4f2e41;
-  --now: #ffb884;
-  --done: #6ed7b4;
-  --done-soft: #28483f;
-  --done-ink: #9ae8ce;
-  --now-soft: #513524;
-  --now-ink: #ffc49b;
-  --lav: #c3acf3;
+  --background: #22271e;
+  --foreground: #f0eddf;
+  --surface: #2c3326;
+  --surface-soft: #35402c;
+  --primary: #b5ce8c;
+  --primary-strong: #d1e5b2;
+  --primary-soft: #3c4a2e;
+  --muted: #b1b99f;
+  --border: #4a563d;
+  --now: #e1b47c;
+  --done: #b0d18d;
+  --done-soft: #34472b;
+  --done-ink: #c6e5aa;
+  --now-soft: #4b3d2b;
+  --now-ink: #f0c893;
+  --lav: #b9d393;
   --shadow: 0 2px 6px rgba(0, 0, 0, 0.3), 0 16px 40px rgba(0, 0, 0, 0.4);
-  --dots: rgba(255, 147, 191, 0.12);
+  --dots: rgba(181, 206, 140, 0.08);
   --veil: rgba(0, 0, 0, 0.5);
 }
 
@@ -215,3 +215,19 @@ a {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Poipi Focus: a quiet paper planner with a little luck. */
+.poipi-shell{border-inline:1px solid var(--border);box-shadow:0 0 70px #6c7d3910}
+.poipi-shell>header{border-bottom:1px solid var(--border);background:var(--background)}
+.poipi-shell nav{gap:5px;padding-bottom:9px;padding-inline:12px}
+.poipi-shell nav a{border-radius:14px;border-width:1px;border-bottom-width:1px;transform:none!important;min-height:42px;font-size:12px;padding-inline:12px}
+.poipi-shell nav a[aria-current=page]{box-shadow:0 3px 0 color-mix(in srgb,var(--primary) 30%,transparent)}
+.poipi-shell .kitty-paper{border-top:1px solid var(--border);background-size:26px 26px}
+.poipi-brand{line-height:1.1}.poipi-brand small{display:block;font:8px/1.6 var(--font-sans);letter-spacing:1.4px;color:var(--muted);margin-top:3px}
+.poipi-greeting{position:relative;isolation:isolate;overflow:hidden;border-color:color-mix(in srgb,var(--primary) 25%,var(--border));background:linear-gradient(120deg,var(--surface-soft),var(--surface))}
+.poipi-greeting:after{content:'✧';position:absolute;top:25px;right:20px;color:var(--primary);opacity:.25;font-size:55px;z-index:-1}
+.poipi-progress{margin-top:14px;height:7px;background:var(--surface-soft);border:1px solid var(--border);border-radius:20px;overflow:hidden}
+.poipi-progress>span{display:block;height:100%;background:var(--primary);border-radius:20px;transition:width .25s}
+.poipi-mascot{display:inline-block;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 2px 0 #8b9d4c14)}
+@media(min-width:700px){.poipi-shell{max-width:500px}.poipi-auth{max-width:500px;border-inline:1px solid var(--border);box-shadow:0 0 70px #6c7d3910}}
+@media(prefers-reduced-motion:reduce){.poipi-progress>span{transition:none}}

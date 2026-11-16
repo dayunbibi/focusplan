@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { useUi } from "../_lib/ui-store";
 
 const fabClass =
-  "absolute bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-5 grid size-[60px] place-items-center rounded-full border-2 border-primary bg-primary text-white shadow-[0_8px_20px_rgba(255,127,178,0.45)]";
+  "absolute bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-5 grid size-[60px] place-items-center rounded-full border-2 border-primary bg-primary text-white shadow-[0_8px_20px_rgba(111,135,73,0.3)]";
 
 /** Floating add button for tasks and classes. Shown only on Today, Tasks, and Timetable. */
 export function KittyFab({ nextClassColor }: { nextClassColor: string }) {
